@@ -8,21 +8,169 @@
 
     <title>{{ page_title }}</title>
   </head>
+
   <body>
-    <div class="container">
-    <h1>Добро пожаловать!</h1>
+    <div class="page">
+
+      <section class="header container border">
         <div class="row">
-            <div class="col-6">
-                <h2>Новости настолок!</h2>
-            </div>
-            <div class="col-6">
-                <button type="button" class="btn btn-dark">lfg/lfm</button>
-                <br>
-                <br>
-                <button type="button" class="btn btn-dark">Магазины</button>
-            </div>
+          <div class="col-2">
+            <p>
+              Лого.jpg
+            </p>
+          </div>
+          <div class="col-8 text-center border-left border-right">
+            
+            <ul class="nav nav-tabs nav-fill nav-justified">
+              <li class="nav-item">
+                <a class="nav-link" href="/">Главная</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">LFG</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Обмен игр</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Новости</a>
+              </li>
+            </ul>
+
+          </div>
+          <div class="col-2">
+            <a class="nav-link" href="#">Авторизация</a>
+          </div>
         </div>
+      </section>
+
+      <section class="content container border-left border-right">
+        <div class="row">
+          <div class="col-10">
+
+            <div class="row info p-4">
+              <h1>Информация о сайте? новости сайта?</h1>
+            </div>
+            
+            <div class="row border-top news px-4 py-2">
+              Новости мира настолок/релизы и тп
+              
+              <div class="row row-cols-1 row-cols-md-2 g-4">
+                <div class="col">
+                  <div class="card h-100">
+                    <img src="..." class="card-img-top" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">Заголовок новости</h5>
+                      <p class="card-text">Часть новости.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="card h-100">
+                    <img src="..." class="card-img-top" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">Заголовок новости</h5>
+                      <p class="card-text">Часть новости.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="card h-100">
+                    <img src="..." class="card-img-top" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">Заголовок новости</h5>
+                      <p class="card-text">Часть новости.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="card h-100">
+                    <img src="..." class="card-img-top" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">Заголовок новости</h5>
+                      <p class="card-text">Часть новости.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="col-2 border-left">
+            <div class="row">
+              <div class="col">
+
+                <div class="card mt-3">
+                  <div class="card-body">
+                    <h5 class="card-title">Заголовок</h5>
+                    <p class="card-text">Контент</p>
+                  </div>
+                </div>
+
+                <div class="card mt-3">
+                  <div class="card-body">
+                    <h5 class="card-title">Заголовок</h5>
+                    <p class="card-text">Контент</p>
+                  </div>
+                </div>
+
+                <div class="card mt-3">
+                  <div class="card-body">
+                    <h5 class="card-title">Заголовок</h5>
+                    <p class="card-text">Контент</p>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+      </section>
+
+      <section class="footer container border">
+        <div class="container">
+          <div class="row">
+            <div class="col-8 text-center border-right">
+              <ul class="nav nav-tabs nav-fill nav-justified">
+                <li class="nav-item">
+                  <a class="nav-link" href="/">Главная</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">LFG</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Обмен игр</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Новости</a>
+                </li>
+              </ul>
+            </div>
+            <div class="col-4">
+
+              <ul class="nav nav-tabs nav-fill nav-justified">
+                <li class="nav-item">
+                  <a class="nav-link" href="#">TG</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">FB</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">I</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">TW</a>
+                </li>
+              </ul>
+
+            </div>
+          </div>
+        </div>
+      </section>
+
     </div>
+
+   
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
