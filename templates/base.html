@@ -12,15 +12,29 @@
   <body>
     <div class="page">
 
-      <section class="header container bg-primary p-2">
+      <section class="header container bg-secondary p-2">
         <div class="row">
-          <div class="col-2 d-flex justify-content-start align-items-center">
-              Лого.jpg
+          
+           <div class="btn-group">
+            <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Меню
+            </button>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="#">Главная</a>
+              <a class="dropdown-item" href="#">LFG</a>
+              <a class="dropdown-item" href="#">Новости</a>
+              <a class="dropdown-item" href="#">Обмен игр</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#">Личный кабинет</a>
+            </div>
           </div>
 
-          <div class="col-6">
+          <div class="col-7">
             
-            <ul class="nav d-flex justify-content-center align-items-center border-0">
+            <ul class="nav d-flex justify-content-left align-items-center border-0">
+              <div class="col-2 d-flex justify-content-start align-items-center">
+                Лого.jpg
+              </div>
               <li class="nav-item">
                 <a class="nav-link p-2 text-dark" href="/">Главная</a>
               </li>
@@ -40,7 +54,7 @@
 
           </div>
 
-          <div class="col-4 d-flex justify-content-end align-items-center">
+          <div class="col-3 d-flex justify-content-end align-items-center">
               Строка поиска?
           </div>
         </div>
@@ -63,7 +77,7 @@
             </div>
 
             <div class="col-6 text-center">
-                <ul class="nav d-flex justify-content-center align-items-center border-0">
+                <ul class="nav d-flex justify-content-left align-items-center border-0">
                     <li class="nav-item">
                       <a class="nav-link p-2 text-primary" href="/">Главная</a>
                     </li>
