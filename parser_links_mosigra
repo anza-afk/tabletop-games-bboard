@@ -64,7 +64,8 @@ if __name__ == '__main__':
                     db_session.add(current_game)
                     db_session.commit()
                 except IntegrityError:
-                    continue
+                    db_session.rollback()
+
 
    # url = 'https://www.mosigra.ru/vzryvnye_kotyata/'
    # a = get_games_data(get_html(url))
