@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="content container bg-light">
+
+  <div class="row">
+
+    <div class="col-10">
+      <div class="row info p-4">
+        <h1 class="text-center">Добро пожаловать на портале любителей настольных игр!</h1>
+      </div>
+      <div class="container pb-4">
+
+        <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+
+          <ol class="carousel-indicators">
+            {% for news in list_news %}
+              <li data-target="#carouselExampleIndicators" data-slide-to="{{loop.index0}}" class="{% if loop.first %}{{'active'}}{% endif %}"></li>
+            {% endfor %}
+          </ol>
+          
+          <div class="carousel-inner" style="width:100%; height: 500px !important;">
+            {% for news in list_news %}
+              <div class="carousel-item {% if loop.first %}{{'active'}}{% endif %}">
+                <img class="d-block w-100 max-height: 500px" src="{{ news['img_news'] }}" style="width: 100%; height: 500px; object-fit: cover;" alt="{{ news['title'] }}">
+                <div class="carousel-caption">
+                  <h5>{{ news['title'] }}</h5>
+                  <p>{{ news['text_news'] }}</p>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+
+          <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+          </a>
+          <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="col-2">
+      <div class="row">
+        <div class="col">
+          <div class="card mt-3">
+            <div class="card-body">
+              <h5 class="card-title">Заголовок</h5>
+              <p class="card-text">Контент</p>
+            </div>
+          </div>
+          <div class="card mt-3">
+            <div class="card-body">
+              <h5 class="card-title">Заголовок</h5>
+              <p class="card-text">Контент</p>
+            </div>
+          </div>
+          <div class="card mt-3">
+            <div class="card-body">
+              <h5 class="card-title">Заголовок</h5>
+              <p class="card-text">Контент</p>
+            </div>
+          </div>
+        </div>
+      </div>  
+    </div>
+
+  </div>
+
+</section>
+
+{% endblock content %}   
