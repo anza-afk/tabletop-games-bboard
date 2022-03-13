@@ -1,6 +1,6 @@
 from sqlalchemy import JSON, Column, Integer, String
 
-from db_tabletop import Base, engine
+from mosigra.db_tabletop import Base, engine
 
 class Game(Base):
     __tablename__ = "games"

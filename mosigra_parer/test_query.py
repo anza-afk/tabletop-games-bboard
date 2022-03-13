@@ -1,4 +1,4 @@
-from db_tabletop import db_session
+from mosigra.db_tabletop import db_session
 from models import Game
 import json
 
