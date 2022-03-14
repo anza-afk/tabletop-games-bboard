@@ -6,3 +6,6 @@ Jinja2==3.0.3
 MarkupSafe==2.1.0
 Werkzeug==2.0.3
 beautifulsoup4==4.10.0
+
+SQLAlchemy~=1.4.32
+requests~=2.27.1

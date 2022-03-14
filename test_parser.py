@@ -1,11 +1,11 @@
 from bs4 import BeautifulSoup
 
-html_news = 'news_game.html'
+html_news = 'news_game.soup'
 
 def get_game_news(html_news: str) -> list[dict]:
     with open("news_game.html", "r", encoding="utf8") as f:
         html = f.read()
-        soup = BeautifulSoup(html, 'html.parser')
+        soup = BeautifulSoup(html, 'soup.parser')
         news_list = soup.find('div', class_='article-container').findAll('article')
         result_news = []
         for news in news_list:
