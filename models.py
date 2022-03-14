@@ -14,15 +14,6 @@ class Game(Base):
     tags = Column(JSON())
     image = Column(String())
 
-    def __init__(self, name, number_of_players, age, brand, description, tags, image):
-        self.name = name
-        self.number_of_players = number_of_players
-        self.age = age
-        self.brand = brand
-        self.description = description
-        self.tags = tags
-        self.image = image
-
 
     def __repr__(self):
         return f'User {self.id}, {self.name}'

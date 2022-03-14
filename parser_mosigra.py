@@ -3,14 +3,16 @@ import requests
 from bs4 import BeautifulSoup as bs
 import re
 
+URL = 'https://www.mosigra.ru/nastolnye-igry/?page={0}'
+MY_SESSION = requests.Session()
 
-def get_html(url):
+def get_html(url, session:MY_SESSION):
     try: 
-        result = requests.get(url)
+        result = session.get(url)
         result.raise_for_status()
         return result.text
     except(requests.RequestException, ValueError):
-        return False
+        return None
 
 
 def get_last_page(html):
@@ -29,9 +31,8 @@ def get_urls(html):
 
 
 if __name__ == '__main__':
-    url = 'https://www.mosigra.ru/nastolnye-igry/?page='
-    for page in range(1, (get_last_page(get_html(url))+1)):
-        current_page = get_html(f'{url}{page}')
+    for page in range(1, (get_last_page(get_html(URL))+1)):
+        current_page = get_html(URL.format(page))
         with open('links_list.txt', 'a') as f:
             for link in get_urls(current_page):
                 f.write(link+'\n')
