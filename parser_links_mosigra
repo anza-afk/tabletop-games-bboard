@@ -1,7 +1,3 @@
-from cgitb import html
-from http.client import BAD_REQUEST
-from tkinter.messagebox import NO
-from unicodedata import name
 import requests
 from bs4 import BeautifulSoup as bs
 import json
@@ -11,7 +7,7 @@ from db_tabletop import db_session
 from psycopg2._psycopg import IntegrityError
 
 
-def get_html(url):
+def get_html(url:str) -> str:
     try: 
         result = requests.get(url)
         result.raise_for_status()
@@ -20,7 +16,7 @@ def get_html(url):
         return False
 
 
-def get_games_data(html):
+def get_games_data(game_page:str) -> dict:
     game_data = {'name' : None,
         'numbers_of_players' : None,
         'age' : None,
@@ -29,7 +25,7 @@ def get_games_data(html):
         'tags' : None,
         'image' : None
     }
-    soup = bs(html, 'html.parser')
+    soup = bs(game_page, 'html.parser')
     game_data['name'] = soup.find('article', class_="product__article tabs-container").find('h1').text   
     something = (soup.find(id="attributes", class_ = 'tab-pane fade show').text).strip()
     while '\n\n' in something:
@@ -58,6 +54,7 @@ def get_games_data(html):
 
 
 if __name__ == '__main__':
+
     with open('links_list.txt', 'r') as links_file:
         lines = links_file.readlines()[:]
         for line in lines:
