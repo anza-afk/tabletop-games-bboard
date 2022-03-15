@@ -4,9 +4,8 @@ from bs4 import BeautifulSoup as bs
 import re
 
 URL = 'https://www.mosigra.ru/nastolnye-igry/?page={0}'
-MY_SESSION = requests.Session()
 
-def get_html(url, session:MY_SESSION):
+def get_html(url:str, session:requests.Session) -> str:
     try: 
         result = session.get(url)
         result.raise_for_status()
@@ -15,13 +14,13 @@ def get_html(url, session:MY_SESSION):
         return None
 
 
-def get_last_page(html):
+def get_last_page(html:str) -> int:
     soup = bs(html, 'html.parser')
     url = soup.find('a', class_='last')
     return int(re.split(r"=|&",str(url))[3])
 
 
-def get_urls(html):  
+def get_urls(html:str) -> list:  
     links = []  
     soup = bs(html, 'html.parser')
     games = soup.find('div', class_='products-container').findAll('article')
@@ -31,7 +30,8 @@ def get_urls(html):
 
 
 if __name__ == '__main__':
-    for page in range(1, (get_last_page(get_html(URL))+1)):
+    my_session = requests.Session()
+    for page in range(1, (get_last_page(get_html(URL, my_session))+1)):
         current_page = get_html(URL.format(page))
         with open('links_list.txt', 'a') as f:
             for link in get_urls(current_page):
