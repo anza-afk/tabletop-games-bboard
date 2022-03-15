@@ -132,4 +132,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-db_keys.py
+config.py

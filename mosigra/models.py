@@ -1,6 +1,6 @@
 from sqlalchemy import JSON, Column, Integer, String
 
-from db_tabletop import Base, engine
+from mosigra.db_tabletop import Base, engine
 
 class Game(Base):
     __tablename__ = "games"
@@ -15,7 +15,7 @@ class Game(Base):
     image = Column(String())
 
 
-    def __repr__(self):
+    def __repr__(self)  -> str:
         return f'User {self.id}, {self.name}'
 
 if __name__ == "__main__":
