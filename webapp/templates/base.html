@@ -47,8 +47,18 @@
               <li class="nav-item">
                 <a class="nav-link text-dark" href="#">Новости</a>
               </li>
+              {% if current_user.is_authenticated %}
               <li class="nav-item">
-                <a class="nav-link text-dark" href="/login">Авторизация/ЛК</a>
+                <a class="nav-link text-dark" href="/logout">Выйти</a>
+              </li>
+              {% else %}
+              <li class="nav-item">
+                <a class="nav-link text-dark" href="/login">Авторизация</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-dark" href="/registration">Регистрация</a>
+              </li>
+              {% endif %}
               </li>
             </ul>
 
@@ -90,9 +100,18 @@
                     <li class="nav-item">
                       <a class="nav-link text-primary" href="#">Новости</a>
                     </li>
+                    {% if current_user.is_authenticated %}
                     <li class="nav-item">
-                      <a class="nav-link text-primary" href="/login">Авторизация/ЛК</a>
+                      <a class="nav-link text-dark" href="/logout">Выйти</a>
                     </li>
+                    {% else %}
+                    <li class="nav-item">
+                      <a class="nav-link text-dark" href="/login">Авторизация</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link text-dark" href="/registration">Регистрация</a>
+                    </li>
+                    {% endif %}
                 </ul>
             </div>
 
