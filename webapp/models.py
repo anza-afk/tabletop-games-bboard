@@ -1,13 +1,14 @@
 from sqlalchemy import Column, Integer, String, JSON, ForeignKey
 from webapp.db import Base, engine
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
 
 
-class User(Base):
+class User(Base, UserMixin):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True)
-    username = Column(String())
+    username = Column(String(), index=True, unique=True)
     password = Column(String())
     email = Column(String(), unique=True)
     role = Column(String())
