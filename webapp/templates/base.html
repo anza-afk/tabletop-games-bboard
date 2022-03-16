@@ -49,6 +49,9 @@
               </li>
               {% if current_user.is_authenticated %}
               <li class="nav-item">
+                <a class="nav-link text-dark" href="/profile">Профиль</a>
+              </li>
+              <li class="nav-item">
                 <a class="nav-link text-dark" href="/logout">Выйти</a>
               </li>
               {% else %}
@@ -101,6 +104,9 @@
                       <a class="nav-link text-primary" href="#">Новости</a>
                     </li>
                     {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                      <a class="nav-link text-dark" href="/profile">Профиль</a>
+                    </li>
                     <li class="nav-item">
                       <a class="nav-link text-dark" href="/logout">Выйти</a>
                     </li>
