@@ -13,8 +13,8 @@ class Link(Base):
         return f'Ссылка {self.link} - {self.status}'
 
 
-class Game(Base):
-    __tablename__ = 'games'
+class GameHg(Base):
+    __tablename__ = 'games_hg'
 
     id = Column(Integer, primary_key=True)
     link_id = Column(Integer, ForeignKey(Link.id))

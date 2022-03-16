@@ -1,4 +1,5 @@
-from requests import get, RequestException
+from flask import request
+from requests import get, RequestException, Session
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 from db import db_session
@@ -9,24 +10,24 @@ from sqlalchemy.exc import IntegrityError
 BASE_URL = 'https://hobbygames.ru/nastolnie?page={0}&results_per_page=60&sort=name&order=ASC&parameter_type=0'
 
 
-def get_html(url: str) -> str:
+def get_html(url: str, session: Session) -> str:
     """
     Возвращает soup страницу полученную по ссылке.
     """
     try:
-        result = get(url)
+        result = session.get(url)
         result.raise_for_status()
         return result.text
     except(RequestException, ValueError):
         print(f'Не удалось получить страницу: {url}')
 
 
-def get_number_of_last_page_game_list(first_page: str) -> int:
+def get_number_of_last_page_game_list(first_page: str, session: Session) -> int:
     """
     Возвращает номер последней страницы, содержащей игры во вкладке
     настольных игр.
     """
-    last_page_html = get_html(first_page)
+    last_page_html = get_html(first_page, session)
     soup = BeautifulSoup(last_page_html, 'html.parser')
     last_page_url = soup.find(
         'ul', class_='pagination'
@@ -66,9 +67,10 @@ def add_links_to_db(links: list) -> None:
 
 
 if __name__ == "__main__":
-    number_of_last_page = get_number_of_last_page_game_list(BASE_URL.format(1))
+    current_session = Session()
+    number_of_last_page = get_number_of_last_page_game_list(BASE_URL.format(1), current_session)
     for current_number_of_page in range(1, 2):  # number_of_last_page + 1
-        html = get_html(BASE_URL.format(current_number_of_page))
+        html = get_html(BASE_URL.format(current_number_of_page), current_session)
         if html:
             links = get_links_from_page(html)
             add_links_to_db(links)

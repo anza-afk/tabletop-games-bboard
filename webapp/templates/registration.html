@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="content container bg-light">
+
+    <div class="row">
+  
+      <div class="col-5">
+
+        <form action="" method="post">
+            {{ form.csrf_token }}
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.username.label }}
+                {{ form.username() }}
+            </div>
+            <div class="form-group">
+                {{ form.password.label }}
+                {{ form.password() }}
+            </div>
+            <div class="form-group">
+                {{ form.confirm_password.label }}
+                {{ form.confirm_password() }}
+                {% for field, errors in form.errors.items() %}
+                  <small class="form-text text-muted ">
+                      {{ ', '.join(errors) }}
+                  </small>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                {{ form.email.label }}
+                {{ form.email() }}
+            </div>
+            {{ form.submit() }}
+          </br>
+        </form>
+      </div>  
+    </div>
+</section>
+{% endblock content %}   
