@@ -163,3 +163,4 @@ typing_extensions==4.1.1
 urllib3==1.26.8
 Werkzeug==2.0.3
 WTForms==3.0.1
+email-validator==1.1.3

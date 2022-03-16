@@ -1,4 +1,3 @@
-from crypt import methods
 from werkzeug.security import generate_password_hash
 from flask import Flask, redirect, render_template, request, flash, url_for
 from flask_login import LoginManager, current_user, login_user, logout_user
@@ -54,7 +53,9 @@ def create_app():
         logout_user()
         return redirect(url_for('index'))
 
-    @app.route('/registration', methods=['POST', 'GET'])
+    @app.route('/registration', 
+               
+               s=['POST', 'GET'])
     def registration():
         title = 'Регистрация'
         registration_form = RegistrationForm()
@@ -69,7 +70,7 @@ def create_app():
                     role='1'
                     )
                 add_user(new_user)
-                # return redirect('/')
+                return redirect('/login')
 
         return render_template('registration.html', page_title = title, form = registration_form)
     
