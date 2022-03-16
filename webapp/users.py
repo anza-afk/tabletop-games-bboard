@@ -1,5 +1,3 @@
-from tabnanny import check
-from tkinter.messagebox import NO
 from webapp.db import db_session
 from webapp.models import User
 

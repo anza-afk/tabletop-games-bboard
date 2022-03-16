@@ -1,5 +1,3 @@
-from cmath import pi
-import imp
 from werkzeug.security import generate_password_hash
 from flask import Flask, redirect, render_template, request
 from news_parser.test_parser import result_news
@@ -36,7 +34,7 @@ def create_app():
                     role='1'
                     )
                 add_user(new_user)
-                # return redirect('/')
+                return redirect('/login')
 
         return render_template('registration.html', page_title = title, form = registration_form)
     

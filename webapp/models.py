@@ -3,11 +3,12 @@ from webapp.db import Base, engine
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
+
 class User(Base):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True)
-    username = Column(String())
+    username = Column(String(), index=True, unique=True)
     password = Column(String())
     email = Column(String(), unique=True)
     role = Column(String())
