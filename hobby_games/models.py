@@ -3,7 +3,7 @@ from db import Base, engine
 
 
 class Link(Base):
-    __tablename__ = 'links'
+    __tablename__ = 'links_from_hg'
 
     id = Column(Integer, primary_key=True)
     link = Column(String(), unique=True)

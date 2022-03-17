@@ -1,15 +1,23 @@
+from tkinter.messagebox import NO
 from webapp.db import db_session
 from webapp.models import User, User_profile
 from flask_login import current_user
+import sqlalchemy.exc
 
-def check_user(new_user_email):
-    return db_session.query(User.email).filter(User.email == new_user_email).count()
 
-def add_user(new_user: User) -> None:
-    db_session.add(new_user)
-    db_session.commit()
-    db_session.close()
-    
+def add_user(new_user: User) -> bool:
+    """
+    Записывает данные нового пользователя в БД.
+    Возвращает результат записи.
+    """
+    try:
+        db_session.add(new_user)
+        db_session.commit()
+        db_session.close()
+        return True
+    except sqlalchemy.exc: #  sqlalchemy.exc не обрабатываются, нужно понять как обрабатывать
+        return False
+
 
 def add_profile(new_profile: User_profile) -> None:
     db_session.add(new_profile)
@@ -23,7 +31,7 @@ def update_profile(form, user_id) -> None:
     profile_email.email = form['email'].data
     profile.owner_id = user_id.id,
     profile.name=form['name'].data,
-    profile.surname=form['name'].data,
+    profile.surname=form['surname'].data,
     profile.country=form['country'].data,
     profile.city=form['city'].data,
     profile.favorite_games=form['favorite_games'].data,

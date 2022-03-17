@@ -3,30 +3,27 @@
 {% block content %}
 
 <section class="content container bg-light">
-
     <div class="row">
-  
       <div class="col-5">
 
         <form action="" method="post" class="py-3">
             {{ form.hidden_tag() }}
 
-            {% for field in form if field.name not in ['csrf_token', 'submit'] %}
-
+          {% for field in form if field.name not in ['csrf_token', 'submit'] %}
             <div class="form-group">
               {{ field.label() }}
               {{ field() }}
               
-              <p class="error text-dark text-center">
-                {% for e in field.errors %}
-                  {{ e }}
-                {% endfor %}
-              </p>
+                <p class="error text-dark text-center">
+                  {% for e in field.errors %}
+                    {{ e }}
+                  {% endfor %}
+                </p>
+                
             </div>
-
             {% endfor %}
 
-            {{ form.submit() }}
+          {{ form.submit() }}
 
         </form>
 
