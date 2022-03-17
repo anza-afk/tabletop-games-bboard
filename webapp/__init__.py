@@ -1,11 +1,10 @@
 from werkzeug.security import generate_password_hash
-from flask import Flask, redirect, render_template, request, flash, url_for
-from flask_login import LoginManager, current_user, login_user, logout_user
+from flask import Flask, redirect, render_template, request, flash, url_for, session
+from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from news_parser.test_parser import result_news
-from webapp.forms import LoginForm, RegistrationForm
-from webapp.users import check_user, add_user
-from webapp.models import User
-
+from webapp.forms import LoginForm, RegistrationForm, ProfileForm
+from webapp.users import check_user, add_user, add_profile, join_profile, add_profile, update_profile
+from webapp.models import User, User_profile
 
 def create_app():
     app = Flask(__name__)
@@ -41,7 +40,7 @@ def create_app():
         if form.validate_on_submit():
             user = User.query.filter_by(username=form.username.data).first()
             if user and user.check_password(form.password.data):
-                login_user(user)
+                login_user(user, remember=form.remember_me.data)
                 flash('Успешный вход')
                 return redirect(url_for('index'))
 
@@ -53,9 +52,7 @@ def create_app():
         logout_user()
         return redirect(url_for('index'))
 
-    @app.route('/registration', 
-               
-               s=['POST', 'GET'])
+    @app.route('/registration', methods=['POST', 'GET'])
     def registration():
         title = 'Регистрация'
         registration_form = RegistrationForm()
@@ -73,5 +70,38 @@ def create_app():
                 return redirect('/login')
 
         return render_template('registration.html', page_title = title, form = registration_form)
+    
+    @login_required
+    @app.route('/profile')
+    def profile():
+        title = f'Профиль {current_user.username}'
+        profile_data = join_profile(current_user.id)
+        profile_form = ProfileForm()
+        return render_template('profile.html', page_title=title, form = profile_form, profile_data = profile_data)
+    
+    @app.route('/submit_profile', methods=['POST', 'GET'])
+    def submit_profile():
+        form = ProfileForm()
+
+#        if form.validate_on_submit():
+        if bool(User_profile.query.filter_by(owner_id=current_user.id).first()):
+            update_profile(form, current_user)
+            return redirect(url_for('index'))
+        new_profile = User_profile(
+            owner_id=current_user.id,
+            name=form['name'].data,
+            surname=form['name'].data,
+            country=form['country'].data,
+            city=form['city'].data,
+            favorite_games=form['favorite_games'].data,
+            desired_games=form['desired_games'].data,
+            about_user=form['about_user'].data
+        )
+        
+            #  email_for_user = User()
+        add_profile(new_profile)
+        flash('Успех!')
+        return redirect(url_for('index'))
+
     
     return app

@@ -21,7 +21,23 @@ class User(Base, UserMixin):
 
     def __repr__(self) -> str:
         return f'Пользователь {self.username} - {self.email}'
+    
 
+class User_profile(Base, UserMixin):
+    __tablename__ = 'profiles'
+
+    id = Column(Integer, primary_key=True)
+    owner_id = Column(Integer(), ForeignKey('users.id'), unique=True)
+    name = Column(String())
+    surname = Column(String())
+    country = Column(String())
+    city = Column(String())
+    favorite_games = Column(String())
+    desired_games = Column(String())
+    about_user = Column(String())
+
+    def __repr__(self) -> str:
+        return f'Пользователь {User.username} - {User.email}'
 
 if __name__ == '__main__':
     Base.metadata.create_all(bind=engine)
