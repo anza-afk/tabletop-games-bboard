@@ -1,11 +1,10 @@
 from werkzeug.security import generate_password_hash
-from flask import Flask, redirect, render_template, request, flash, url_for
-from flask_login import LoginManager, current_user, login_user, logout_user
+from flask import Flask, redirect, render_template, request, flash, url_for, session
+from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from news_parser.test_parser import result_news
 from webapp.forms import LoginForm, RegistrationForm, ProfileForm
-from webapp.users import check_user, add_user, add_profile
+from webapp.users import check_user, add_user, add_profile, join_profile, add_profile, update_profile
 from webapp.models import User, User_profile
-
 
 def create_app():
     app = Flask(__name__)
@@ -72,12 +71,13 @@ def create_app():
 
         return render_template('registration.html', page_title = title, form = registration_form)
     
+    @login_required
     @app.route('/profile')
     def profile():
         title = f'Профиль {current_user.username}'
+        profile_data = join_profile(current_user.id)
         profile_form = ProfileForm()
-      
-        return render_template('profile.html', page_title=title, form = profile_form)
+        return render_template('profile.html', page_title=title, form = profile_form, profile_data = profile_data)
     
     @app.route('/submit_profile', methods=['POST', 'GET'])
     def submit_profile():
@@ -85,8 +85,8 @@ def create_app():
 
 #        if form.validate_on_submit():
         if bool(User_profile.query.filter_by(owner_id=current_user.id).first()):
-            flash('профиль уже существует')
-            return redirect(url_for('profile'))
+            update_profile(form, current_user)
+            return redirect(url_for('index'))
         new_profile = User_profile(
             owner_id=current_user.id,
             name=form['name'].data,

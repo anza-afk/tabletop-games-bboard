@@ -22,6 +22,7 @@ class User(Base, UserMixin):
     def __repr__(self) -> str:
         return f'Пользователь {self.username} - {self.email}'
     
+
 class User_profile(Base, UserMixin):
     __tablename__ = 'profiles'
 

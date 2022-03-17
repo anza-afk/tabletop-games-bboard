@@ -2,6 +2,7 @@ from dataclasses import fields
 from webapp.db import db_session
 from webapp.models import User
 from flask_wtf import FlaskForm
+from flask_login import current_user
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, EqualTo, Email, ValidationError, Length
 
@@ -28,6 +29,7 @@ class LoginForm(FlaskForm):
 
 
 class RegistrationForm(FlaskForm):
+
     username = StringField(
         'Имя пользователя',
         validators=[
@@ -84,6 +86,7 @@ class RegistrationForm(FlaskForm):
             )
 
 class ProfileForm(FlaskForm):
+
     name = StringField(
         'Имя',
 #        validators=[
