@@ -69,7 +69,7 @@ def add_links_to_db(links: list) -> None:
 if __name__ == "__main__":
     current_session = Session()
     number_of_last_page = get_number_of_last_page_game_list(BASE_URL.format(1), current_session)
-    for current_number_of_page in range(1, 2):  # number_of_last_page + 1
+    for current_number_of_page in range(1, 3):  # number_of_last_page + 1
         html = get_html(BASE_URL.format(current_number_of_page), current_session)
         if html:
             links = get_links_from_page(html)

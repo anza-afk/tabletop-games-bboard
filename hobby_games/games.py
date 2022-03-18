@@ -1,9 +1,8 @@
 from flask import session
 from requests import Session
-from hobby_games.models import GameHg
 from links import get_html
 from db import db_session
-from models import Game, Link
+from models import GameHg, Link
 from game import CardGame
 
 
