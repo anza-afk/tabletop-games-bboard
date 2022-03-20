@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, JSON, ForeignKey
-from webapp.db import Base, engine
+from webapp.]db import Base, engine
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
@@ -46,7 +46,7 @@ class MeetingForPlay(Base, UserMixin):
     id = Column(Integer, primary_key=True)
     number_of_players = Column(Integer())
     meeting_place = Column(String())
-    desc = Column(String())
+    description = Column(String())
     wishing_to_play = Column(JSON)
     confirmed_players = Column(JSON)
 
