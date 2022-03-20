@@ -1,11 +1,13 @@
 
+
 from werkzeug.security import generate_password_hash
 from flask import Flask, redirect, render_template, request, flash, url_for
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from news_parser.test_parser import result_news
-from webapp.forms import LoginForm, RegistrationForm, ProfileForm
-from webapp.users import add_user, add_profile, join_profile, add_profile, update_profile
-from webapp.models import User, User_profile
+from webapp.forms import LoginForm, RegistrationForm, ProfileForm, MeetingForPlayForm
+from webapp.users import add_user, add_profile, join_profile, add_profile, update_profile, add_meeting
+from webapp.models import User, User_profile, MeetingForPlay
+from datetime import date
 
 
 def create_app():
@@ -78,7 +80,7 @@ def create_app():
 
             if add_user(new_user):
                 flash('Вы успешно зарегистрировались!')
-                return redirect('/login')
+                return redirect(url_for('login'))
 
             flash('Ошибка регистрации, попробуйте повторить позже.')
 
@@ -116,5 +118,37 @@ def create_app():
         add_profile(new_profile)
         flash('Личные данные успешно сохранены!')
         return redirect(url_for('profile'))
+
+    @login_required
+    @app.route('/create_meeting', methods=['POST', 'GET'])
+    def create_meeting():
+        """
+        При GET запросе возвращает страницу для создания встречи.
+        При POST запросе, в случае успешной валидации сохраняет
+        новую встречу в БД.
+        """
+        title = 'Создание встречи'
+        meeting_form = MeetingForPlayForm()
+
+        if meeting_form.validate_on_submit():
+            new_meeting = MeetingForPlay(
+                game_name = meeting_form['game_name'].data,
+                id_user_create = current_user.id,
+                date_create = date.today(),
+                number_of_players = meeting_form['number_of_players'].data,
+                meeting_place = meeting_form['meeting_place'].data,
+                date_meeting = meeting_form['date_meeting'].data,
+                time_meeting = meeting_form['time_meeting'].data,
+                description = meeting_form['description'].data
+                )
+
+            if add_meeting(new_meeting):
+                flash('Вы успешно создали встречу!')
+                return redirect(url_for('index'))  # в Дальнейшем на страницу со всеми встречами
+
+            flash('Ошибка создания встречи, попробуйте повторить позже.')
+
+        return render_template('create_meeting.html', page_title=title, form=meeting_form)
+
 
     return app
