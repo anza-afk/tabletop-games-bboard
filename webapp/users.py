@@ -2,6 +2,7 @@ from tkinter.messagebox import NO
 from webapp.db import db_session
 from webapp.models import User, User_profile
 from flask_login import current_user
+from webapp.models import MeetingForPlay
 import sqlalchemy.exc
 
 
@@ -46,3 +47,17 @@ def join_profile(user_id):
     result = db_session.query(User_profile).filter(User_profile.owner_id == user_id).first()
     db_session.close()
     return result
+
+
+def add_meeting(new_meeting: MeetingForPlay) -> bool:
+    """
+    Записывает данные новой встречи в БД.
+    Возвращает результат записи.
+    """
+    try:
+        db_session.add(new_meeting)
+        db_session.commit()
+        db_session.close()
+        return True
+    except sqlalchemy.exc: #  sqlalchemy.exc не обрабатываются, нужно понять как обрабатывать
+        return False

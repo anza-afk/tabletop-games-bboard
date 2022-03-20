@@ -1,9 +1,10 @@
 from dataclasses import fields
+# from wsgiref.validate import validators
 from webapp.db import db_session
 from webapp.models import User
 from flask_wtf import FlaskForm
 from flask_login import current_user
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, DateField, TextAreaField, TimeField
 from wtforms.validators import DataRequired, EqualTo, Email, ValidationError, Length
 
 
@@ -135,7 +136,50 @@ class ProfileForm(FlaskForm):
         render_kw={"class" : "btn btn-primary"}
     )
 
+class MeetingForPlayForm(FlaskForm):
+    
+    game_name = StringField(
+        'Введите название игры в которую хотите поиграть.',
+        validators=[
+            DataRequired(),
+        ],
+        render_kw={"class" : "form-control"}
+    )
+    number_of_players = IntegerField(
+         'Укажите количество игроков, которых Вы хотите найти.',
+        validators=[
+            DataRequired(),
+        ],
+        render_kw={"class" : "form-control", 'placeholder':'Не менее одного игрока'}
+    )
+    meeting_place = StringField(
+         'Укажите место встречи.',
+        validators=[
+            DataRequired(),
+        ],
+        render_kw={"class" : "form-control", 'placeholder':'г. Москва, Парк Отсанкино, 2я лавочка от входа'}
+    )
+    date_meeting = DateField(
+         'Выберите дату встречи.',
+        validators=[
+            DataRequired(),
+        ],
+        render_kw={"class" : "form-control"}
+    )
+    time_meeting = TimeField(
+         'Выберите время встречи.',
+        validators=[
+            DataRequired(),
+        ],
+        render_kw={"class" : "form-control"}
+    )
+    description = TextAreaField(
+         'Здесь В можете указать любую дополнительную информацию.',
+        render_kw={"class" : "form-control", 'placeholder':'Например: играю только с девченками и на раздивание'}
+    )
+    submit = SubmitField(
+        'Сохранить',
+        render_kw={"class" : "btn btn-primary"}
+    )
 
-# class MeetingForPlay(FlaskForm):
-#     game_name = StringField()
 
