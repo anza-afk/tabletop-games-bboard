@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, JSON, ForeignKey, Date, Time
+from sqlalchemy.orm import relationship
 from webapp.db import Base, engine
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
@@ -54,7 +55,10 @@ class MeetingForPlay(Base, UserMixin):
     description = Column(String())
     wishing_to_play = Column(JSON)
     confirmed_players = Column(JSON)
+    user = relationship('User', backref='meetings')
 
+    def meetings_count(self):
+        return MeetingForPlay.query.all()
 
 if __name__ == '__main__':
     Base.metadata.create_all(bind=engine)

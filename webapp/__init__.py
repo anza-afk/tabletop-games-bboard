@@ -151,4 +151,9 @@ def create_app():
         return render_template('create_meeting.html', page_title=title, form=meeting_form)
 
 
+    login_required
+    @app.route('/meets', methods=['POST', 'GET'])
+    def meets():
+        meets_list = MeetingForPlay.query.all()
+        return render_template('meets.html', meets_list=meets_list)
     return app

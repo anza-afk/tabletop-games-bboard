@@ -109,7 +109,7 @@ class ProfileForm(FlaskForm):
 #        validators=[
 #            Email('Некорректный адрес электронной почты')
 #           ],
-        render_kw={"class" : "form-control", 'placeholder':'Email'}  #хочу поставить стандартное значение текущего юзера - не выходит 'value':webapp.__init__.current_user.email
+        render_kw={"class" : "form-control", 'placeholder':'Email'}
         )
     country = StringField(
         'Страна',
