@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="content container bg-light">
+  <cdiv class="col5">
+    {% for meet in meets_list %}
+    <div class="card">
+      
+        <div class="card-body">
+          <h5 class="card-title">{{ meet.game_name }}</h5>
+          <h6 class="card-subtitle mb-2 text-muted">by: {{ meet.user }}</h6>
+            <p class="card-text">Ищу: {{ meet.number_of_players }}</p>
+            <p class="card-text">Встреча состоится: {{ meet.date_meeting }} в {{ meet.time_meeting }}</p>
+            <p class="card-text">Инфо: {{ meet.description }}</p>
+                <small>Опубликовано: {{ meet.date_create }}</small>
+            </p>
+        </div>
+    </div>
+    {% endfor %}
+  </div>  
+
+
+
+</section>
+
+{% endblock content %}   
