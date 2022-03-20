@@ -6,6 +6,7 @@ from flask_login import current_user
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, EqualTo, Email, ValidationError, Length
 
+
 class LoginForm(FlaskForm):
     username = StringField(
         'Имя пользователя',
@@ -36,7 +37,7 @@ class RegistrationForm(FlaskForm):
             DataRequired(),
             Length(min=5, max=20, message='Имя должно содержать от 5 до 20 символов!')
             ],
-        render_kw={"class" : "form-control"}
+        render_kw={"class": "form-control"}
         )
     password = PasswordField(
         'Придумайте пароль',
@@ -44,7 +45,7 @@ class RegistrationForm(FlaskForm):
             DataRequired(),
             Length(min=5, max=20, message='Пароль должен содержать содержать от 5 до 20 символов!')
             ],
-        render_kw={"class" : "form-control"}
+        render_kw={"class": "form-control"}
         )
     confirm_password = PasswordField(
         'Повторите пароль',
@@ -53,18 +54,18 @@ class RegistrationForm(FlaskForm):
             DataRequired(),
             Length(min=5, max=20, message='Пароль должен содержать содержать от 5 до 20 символов!')
             ],
-        render_kw={"class" : "form-control"}
+        render_kw={"class": "form-control"}
         )
     email = StringField(
         'Укажите адрес своей электронной почты',
         validators=[
             Email('Некорректный адрес электронной почты')
             ],
-        render_kw={"class" : "form-control"}
+        render_kw={"class": "form-control"}
         )
     submit = SubmitField(
         'Зарегистрироваться',
-        render_kw={"class" : "btn btn-primary"}
+        render_kw={"class": "btn btn-primary"}
         )
 
     def validate_username(self, username: fields) -> None:
@@ -82,8 +83,9 @@ class RegistrationForm(FlaskForm):
         """
         if db_session.query(User.email).filter(User.email == email.data).count():
             raise ValidationError(
-                f'Указанный электронный адрес уже используется другим пользователем.'
+                'Указанный электронный адрес уже используется другим пользователем.'
             )
+
 
 class ProfileForm(FlaskForm):
 
@@ -132,4 +134,8 @@ class ProfileForm(FlaskForm):
         'Сохранить',
         render_kw={"class" : "btn btn-primary"}
     )
+
+
+# class MeetingForPlay(FlaskForm):
+#     game_name = StringField()
 
