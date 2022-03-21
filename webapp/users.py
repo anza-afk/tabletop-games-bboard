@@ -2,7 +2,7 @@ from tkinter.messagebox import NO
 from webapp.db import db_session
 from webapp.models import User, User_profile
 from flask_login import current_user
-from webapp.models import MeetingForPlay
+from webapp.models import Meeting
 import sqlalchemy.exc
 
 
@@ -49,7 +49,7 @@ def join_profile(user_id):
     return result
 
 
-def add_meeting(new_meeting: MeetingForPlay) -> bool:
+def add_meeting(new_meeting: Meeting) -> bool:
     """
     Записывает данные новой встречи в БД.
     Возвращает результат записи.

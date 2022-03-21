@@ -1,14 +1,13 @@
-
-
 from werkzeug.security import generate_password_hash
 from flask import Flask, redirect, render_template, request, flash, url_for
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from news_parser.test_parser import result_news
-from webapp.forms import LoginForm, RegistrationForm, ProfileForm, MeetingForPlayForm
+from webapp.forms import LoginForm, RegistrationForm, ProfileForm, MeetingForm
 from webapp.users import add_user, add_profile, join_profile, add_profile, update_profile, add_meeting
-from webapp.models import User, User_profile, MeetingForPlay
+from webapp.models import User, User_profile, Meeting
 from datetime import date
-
+from flask_migrate import Migrate
+import webapp.db as db
 
 def create_app():
     app = Flask(__name__)
@@ -17,6 +16,7 @@ def create_app():
     login_manager = LoginManager()
     login_manager.init_app(app)
     login_manager.login_view = 'login'
+    migrate = Migrate(app, db)
 
     @login_manager.user_loader
     def load_user(user_id):
@@ -128,12 +128,12 @@ def create_app():
         новую встречу в БД.
         """
         title = 'Создание встречи'
-        meeting_form = MeetingForPlayForm()
+        meeting_form = MeetingForm()
 
         if meeting_form.validate_on_submit():
-            new_meeting = MeetingForPlay(
+            new_meeting = Meeting(
                 game_name = meeting_form['game_name'].data,
-                id_user_create = current_user.id,
+                owner_id = current_user.id,
                 date_create = date.today(),
                 number_of_players = meeting_form['number_of_players'].data,
                 meeting_place = meeting_form['meeting_place'].data,
@@ -151,9 +151,12 @@ def create_app():
         return render_template('create_meeting.html', page_title=title, form=meeting_form)
 
 
-    login_required
+    @login_required
     @app.route('/meets', methods=['POST', 'GET'])
     def meets():
-        meets_list = MeetingForPlay.query.all()
+        meets_list = db.db_session.query.join(User_profile, User_profile.owner_id == Meeting.owner_id).all()
+        for meet in meets_list:
+            print(meet.user.username)
+            print(meet.city)
         return render_template('meets.html', meets_list=meets_list)
     return app

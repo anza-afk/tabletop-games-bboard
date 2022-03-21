@@ -136,7 +136,7 @@ class ProfileForm(FlaskForm):
         render_kw={"class" : "btn btn-primary"}
     )
 
-class MeetingForPlayForm(FlaskForm):
+class MeetingForm(FlaskForm):
     
     game_name = StringField(
         'Введите название игры в которую хотите поиграть.',
@@ -175,7 +175,7 @@ class MeetingForPlayForm(FlaskForm):
     )
     description = TextAreaField(
          'Здесь В можете указать любую дополнительную информацию.',
-        render_kw={"class" : "form-control", 'placeholder':'Например: играю только с девченками и на раздивание'}
+        render_kw={"class" : "form-control", 'placeholder':'Например: играю только с девчонками и на раздевание'}
     )
     submit = SubmitField(
         'Сохранить',
