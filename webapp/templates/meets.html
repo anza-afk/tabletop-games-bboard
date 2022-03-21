@@ -9,7 +9,7 @@
     <div class="card">    
         <div class="card-body">
           <h5 class="card-title">{{ meet.game_name }}</h5>
-          <a href="#" data-toggle="modal" data-target="#exampleModal" class="link-primary"><h6 class="card-subtitle mb-2 text-primary">by: {{ meet.user.name }}{{ meet.user.username }}</h6></a>
+          <a href="#" data-toggle="modal" data-target="#exampleModal" class="link-primary"><h6 class="card-subtitle mb-2 text-primary">by: {{ meet.user.username }}</h6></a>
             <p class="card-text">Ищу: {{ meet.number_of_players }}</p>
             <p class="card-text">Встреча состоится: {{ meet.date_meeting }} в {{ meet.time_meeting }}</p>
             <p class="card-text">Инфо: {{ meet.description }}</p>
@@ -22,7 +22,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Профиль {{ meet.user.user_profile.name }}</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>

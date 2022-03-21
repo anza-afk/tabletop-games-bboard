@@ -13,7 +13,7 @@ class User(Base, UserMixin):
     password = Column(String())
     email = Column(String(), unique=True)
     role = Column(String())
-    user_profile = relationship('User_profile', backref='user', primaryjoin='and_(User.id == User_profile.owner_id)',uselist=False, lazy='joined')
+    user_profile = relationship('User_profile', backref='user',uselist=False, lazy='joined')
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -58,6 +58,9 @@ class Meeting(Base, UserMixin):
     wishing_to_play = Column(JSON)
     confirmed_players = Column(JSON)
     user = relationship('User', backref='meetings', lazy='joined')
+    user_profile = relationship('User_profile',
+                           foreign_keys=[owner_id],
+                           primaryjoin='User_profile.owner_id == Meeting.owner_id', lazy='joined', uselist=False)
 
     def meetings_count(self):
         return Meeting.query.all()

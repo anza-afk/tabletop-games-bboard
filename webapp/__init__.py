@@ -154,9 +154,6 @@ def create_app():
     @login_required
     @app.route('/meets', methods=['POST', 'GET'])
     def meets():
-        meets_list = db.db_session.query.join(User_profile, User_profile.owner_id == Meeting.owner_id).all()
-        for meet in meets_list:
-            print(meet.user.username)
-            print(meet.city)
+        meets_list = Meeting.query.all()
         return render_template('meets.html', meets_list=meets_list)
     return app
