@@ -13,7 +13,12 @@ class User(Base, UserMixin):
     password = Column(String())
     email = Column(String(), unique=True)
     role = Column(String())
-    user_profile = relationship('User_profile', backref='user',uselist=False, lazy='joined')
+    user_profile = relationship(
+        'UserProfile',
+        backref='user',
+        uselist=False,
+        lazy='joined'
+    )
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -25,7 +30,7 @@ class User(Base, UserMixin):
         return f'Пользователь {self.username} - {self.email}'
 
 
-class User_profile(Base, UserMixin):
+class UserProfile(Base, UserMixin):
     __tablename__ = 'profiles'
 
     id = Column(Integer, primary_key=True)
@@ -37,7 +42,6 @@ class User_profile(Base, UserMixin):
     favorite_games = Column(String())
     desired_games = Column(String())
     about_user = Column(String())
-
 
     def __repr__(self) -> str:
         return f'Пользователь {self.name}'
@@ -57,13 +61,11 @@ class Meeting(Base, UserMixin):
     description = Column(String())
     wishing_to_play = Column(JSON)
     confirmed_players = Column(JSON)
-    user = relationship('User', backref='meetings', lazy='joined')
-    user_profile = relationship('User_profile',
-                           foreign_keys=[owner_id],
-                           primaryjoin='User_profile.owner_id == Meeting.owner_id', lazy='joined', uselist=False)
+    user = relationship('User', backref='meetings', foreign_keys=[owner_id])
 
     def meetings_count(self):
         return Meeting.query.all()
+
 
 if __name__ == '__main__':
     Base.metadata.create_all(bind=engine)
