@@ -17,6 +17,7 @@ def create_app():
     login_manager = LoginManager()
     login_manager.init_app(app)
     login_manager.login_view = 'login'
+    login_manager.login_message = 'Для доступа на эта страницу необходимо авторизоваться!'
     migrate = Migrate(app, db)
 
     @login_manager.user_loader
@@ -93,8 +94,9 @@ def create_app():
             form=registration_form
         )
 
-    @login_required
+    
     @app.route('/profile')
+    @login_required
     def profile():
         title = f'Профиль {current_user.username}'
         profile_data = join_profile(current_user.id)
@@ -131,8 +133,9 @@ def create_app():
         flash('Личные данные успешно сохранены!')
         return redirect(url_for('profile'))
 
-    @login_required
+   
     @app.route('/create_meeting', methods=['POST', 'GET'])
+    @login_required
     def create_meeting():
         """
         При GET запросе возвращает страницу для создания встречи.
@@ -174,4 +177,5 @@ def create_app():
 #        meets_list = paginate(db.db_session.query(Meeting), page, GAMES_PER_PAGE)
         meets_list = db.db_session.query(Meeting).all()
         return render_template('meets.html', meets_list=meets_list, page_title=title)
+        
     return app
