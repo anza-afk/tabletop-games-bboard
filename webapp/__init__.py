@@ -1,13 +1,13 @@
-
-
 from werkzeug.security import generate_password_hash
-from flask import Flask, redirect, render_template, request, flash, url_for
+from flask import Flask, redirect, render_template, flash, url_for
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from news_parser.test_parser import result_news
-from webapp.forms import LoginForm, RegistrationForm, ProfileForm, MeetingForPlayForm
-from webapp.users import add_user, add_profile, join_profile, add_profile, update_profile, add_meeting
-from webapp.models import User, User_profile, MeetingForPlay
+from webapp.forms import LoginForm, RegistrationForm, ProfileForm, MeetingForm
+from webapp.users import add_user, add_profile, join_profile, update_profile, add_meeting
+from webapp.models import User, UserProfile, Meeting
 from datetime import date
+from flask_migrate import Migrate
+import webapp.db as db
 
 
 def create_app():
@@ -17,6 +17,7 @@ def create_app():
     login_manager = LoginManager()
     login_manager.init_app(app)
     login_manager.login_view = 'login'
+    migrate = Migrate(app, db)
 
     @login_manager.user_loader
     def load_user(user_id):
@@ -70,7 +71,9 @@ def create_app():
         registration_form = RegistrationForm()
 
         if registration_form.validate_on_submit():
-            hash_pass = generate_password_hash(registration_form['password'].data)
+            hash_pass = generate_password_hash(
+                registration_form['password'].data
+            )
             new_user = User(
                 username=registration_form['username'].data,
                 password=hash_pass,
@@ -84,7 +87,11 @@ def create_app():
 
             flash('Ошибка регистрации, попробуйте повторить позже.')
 
-        return render_template('registration.html', page_title=title, form=registration_form)
+        return render_template(
+            'registration.html',
+            page_title=title,
+            form=registration_form
+        )
 
     @login_required
     @app.route('/profile')
@@ -92,18 +99,23 @@ def create_app():
         title = f'Профиль {current_user.username}'
         profile_data = join_profile(current_user.id)
         profile_form = ProfileForm()
-        return render_template('profile.html', page_title=title, form = profile_form, profile_data = profile_data)
+        return render_template(
+            'profile.html',
+            page_title=title,
+            form=profile_form,
+            profile_data=profile_data
+        )
 
     @app.route('/submit_profile', methods=['POST', 'GET'])
     def submit_profile():
         form = ProfileForm()
 
 #        if form.validate_on_submit():
-        if bool(User_profile.query.filter_by(owner_id=current_user.id).first()):
+        if bool(UserProfile.query.filter_by(owner_id=current_user.id).first()):
             update_profile(form, current_user)
             flash('Личные данные успешно сохранены!')
             return redirect(url_for('profile'))
-        new_profile = User_profile(
+        new_profile = UserProfile(
             owner_id=current_user.id,
             name=form['name'].data,
             surname=form['surname'].data,
@@ -128,32 +140,36 @@ def create_app():
         новую встречу в БД.
         """
         title = 'Создание встречи'
-        meeting_form = MeetingForPlayForm()
+        meeting_form = MeetingForm()
 
         if meeting_form.validate_on_submit():
-            new_meeting = MeetingForPlay(
-                game_name = meeting_form['game_name'].data,
-                id_user_create = current_user.id,
-                date_create = date.today(),
-                number_of_players = meeting_form['number_of_players'].data,
-                meeting_place = meeting_form['meeting_place'].data,
-                date_meeting = meeting_form['date_meeting'].data,
-                time_meeting = meeting_form['time_meeting'].data,
-                description = meeting_form['description'].data
+            new_meeting = Meeting(
+                game_name=meeting_form['game_name'].data,
+                owner_id=current_user.id,
+                date_create=date.today(),
+                number_of_players=meeting_form['number_of_players'].data,
+                meeting_place=meeting_form['meeting_place'].data,
+                date_meeting=meeting_form['date_meeting'].data,
+                time_meeting=meeting_form['time_meeting'].data,
+                description=meeting_form['description'].data
                 )
 
             if add_meeting(new_meeting):
                 flash('Вы успешно создали встречу!')
-                return redirect(url_for('index'))  # в Дальнейшем на страницу со всеми встречами
+                return redirect(url_for('index'))
 
             flash('Ошибка создания встречи, попробуйте повторить позже.')
 
-        return render_template('create_meeting.html', page_title=title, form=meeting_form)
+        return render_template(
+            'create_meeting.html',
+            page_title=title,
+            form=meeting_form
+        )
 
-
-    login_required
+    @login_required
     @app.route('/meets', methods=['POST', 'GET'])
     def meets():
-        meets_list = MeetingForPlay.query.all()
-        return render_template('meets.html', meets_list=meets_list)
+        title = 'LFG'
+        meets_list = Meeting.query.all()
+        return render_template('meets.html', meets_list=meets_list, title=title)
     return app

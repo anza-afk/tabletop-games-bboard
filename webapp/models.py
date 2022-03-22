@@ -13,6 +13,12 @@ class User(Base, UserMixin):
     password = Column(String())
     email = Column(String(), unique=True)
     role = Column(String())
+    user_profile = relationship(
+        'UserProfile',
+        backref='user',
+        uselist=False,
+        lazy='joined'
+    )
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -24,7 +30,7 @@ class User(Base, UserMixin):
         return f'Пользователь {self.username} - {self.email}'
 
 
-class User_profile(Base, UserMixin):
+class UserProfile(Base, UserMixin):
     __tablename__ = 'profiles'
 
     id = Column(Integer, primary_key=True)
@@ -38,15 +44,15 @@ class User_profile(Base, UserMixin):
     about_user = Column(String())
 
     def __repr__(self) -> str:
-        return f'Пользователь {User.username} - {User.email}'
+        return f'Пользователь {self.name}'
 
 
-class MeetingForPlay(Base, UserMixin):
-    __tablename__ = 'meeting'
+class Meeting(Base, UserMixin):
+    __tablename__ = 'meetings'
 
     id = Column(Integer, primary_key=True)
-    id_user_create = Column(Integer(), ForeignKey('users.id'))
-    game_name = Column(String())
+    owner_id = Column(Integer(), ForeignKey('users.id'))
+    game_name = Column(String(), index=True)
     date_create = Column(Date())
     number_of_players = Column(Integer())
     meeting_place = Column(String())
@@ -55,10 +61,11 @@ class MeetingForPlay(Base, UserMixin):
     description = Column(String())
     wishing_to_play = Column(JSON)
     confirmed_players = Column(JSON)
-    user = relationship('User', backref='meetings')
+    user = relationship('User', backref='meetings', foreign_keys=[owner_id])
 
     def meetings_count(self):
-        return MeetingForPlay.query.all()
+        return Meeting.query.all()
+
 
 if __name__ == '__main__':
     Base.metadata.create_all(bind=engine)

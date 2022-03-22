@@ -2,14 +2,46 @@
 
 {% block content %}
 
+
 <section class="content container bg-light">
-  <cdiv class="col5">
+  <div class="col-8">
     {% for meet in meets_list %}
-    <div class="card">
-      
+    <div class="card">    
         <div class="card-body">
           <h5 class="card-title">{{ meet.game_name }}</h5>
-          <h6 class="card-subtitle mb-2 text-muted">by: {{ meet.user }}</h6>
+          <a href="#" data-toggle="modal" data-target="#ProfileModal{{meet.user.id}}" class="link-primary"><h6 class="card-subtitle mb-2 text-primary">by: {{ meet.user.username }}</h6></a>
+            <!-- Modal -->
+            <div class="modal fade" id="ProfileModal{{meet.user.id}}" tabindex="-1" role="dialog" aria-labelledby="ProfileModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="ProfileModalLabel">Профиль {{ meet.user.user_profile.name }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="row mt-2">
+                      <div class="col-md-6"><label class="labels">{{ meet.user.user_profile.name }}</div>
+                      <div class="col-md-6"><label class="labels">{{ meet.user.user_profile.surname }}</div>
+                  </div>
+                  <div class="row mt-3">
+                      <div class="col-md-6"><label class="labels">{{ meet.user.user_profile.country }}</div>
+                      <div class="col-md-6"><label class="labels">{{ meet.user.user_profile.city }}</div>
+                  </div>
+                  <div class="row mt-3">
+                      <div class="col-md-12"><label class="labels">{{ current_user.email }}</div>
+                      <div class="col-md-12"><label class="labels">{{ meet.user.user_profile.favorite_games }}</div>
+                      <div class="col-md-12"><label class="labels">{{ meet.user.user_profile.desired_games }}</div>
+                      <div class="col-md-12"><label class="labels">{{ meet.user.user_profile.about_user }}</div>
+                  </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
             <p class="card-text">Ищу: {{ meet.number_of_players }}</p>
             <p class="card-text">Встреча состоится: {{ meet.date_meeting }} в {{ meet.time_meeting }}</p>
             <p class="card-text">Инфо: {{ meet.description }}</p>
@@ -17,9 +49,10 @@
             </p>
         </div>
     </div>
+
+
     {% endfor %}
   </div>  
-
 
 
 </section>
