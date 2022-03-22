@@ -1,14 +1,14 @@
+from datetime import date
 from werkzeug.security import generate_password_hash
 from flask import Flask, redirect, render_template, flash, url_for
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
-from news_parser.test_parser import result_news
-from webapp.forms import LoginForm, RegistrationForm, ProfileForm, MeetingForm
-from webapp.users import add_user, add_profile, join_profile, update_profile, add_meeting
-from webapp.models import User, UserProfile, Meeting
-from datetime import date
 from flask_migrate import Migrate
+from news_parser.test_parser import result_news
 import webapp.db as db
-
+from webapp.forms import LoginForm, RegistrationForm, ProfileForm, MeetingForm
+from webapp.users import add_user, add_profile, join_profile, update_profile, add_meeting, paginate
+from webapp.models import User, UserProfile, Meeting
+from webapp.config import GAMES_PER_PAGE
 
 def create_app():
     app = Flask(__name__)
@@ -166,10 +166,12 @@ def create_app():
             form=meeting_form
         )
 
-    @login_required
     @app.route('/meets', methods=['POST', 'GET'])
-    def meets():
+#    @app.route('/meets/<int:page>', methods=['POST', 'GET'])
+    @login_required 
+    def meets(page = 1):
         title = 'LFG'
-        meets_list = Meeting.query.all()
+#        meets_list = paginate(db.db_session.query(Meeting), page, GAMES_PER_PAGE)
+        meets_list = db.db_session.query(Meeting).all()
         return render_template('meets.html', meets_list=meets_list, page_title=title)
     return app

@@ -1,10 +1,23 @@
 from dataclasses import fields
+import datetime
 # from wsgiref.validate import validators
 from webapp.db import db_session
 from webapp.models import User
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, DateField, TextAreaField, TimeField
 from wtforms.validators import DataRequired, EqualTo, Email, ValidationError, Length
+
+def validate_date(form, field):
+    if field.data < datetime.date.today():
+        raise ValidationError("Дата не может быть в прошлом!")
+
+
+def validate_time(form, field):
+    if form.date_meeting.data <= datetime.date.today():
+        if field.data < datetime.datetime.now().time():
+            raise ValidationError("Время не может быть в прошлом!")
+    elif form.date_meeting.data == None:
+        raise ValidationError("Сначала выберите дату.")
 
 
 class LoginForm(FlaskForm):
@@ -136,7 +149,7 @@ class ProfileForm(FlaskForm):
     )
 
 
-class MeetingForm(FlaskForm):    
+class MeetingForm(FlaskForm):
     game_name = StringField(
         'Введите название игры в которую хотите поиграть.',
         validators=[
@@ -156,12 +169,13 @@ class MeetingForm(FlaskForm):
         validators=[
             DataRequired(),
         ],
-        render_kw={"class": "form-control", 'placeholder': 'г. Москва, Парк Останкино, 2я лавочка от входа'}
+        render_kw={"class": "form-control", 'placeholder': 'г. Москва, Парк Останкино, 2-я лавочка от входа'}
     )
     date_meeting = DateField(
          'Выберите дату встречи.',
         validators=[
             DataRequired(),
+            validate_date,
         ],
         render_kw={"class": "form-control"}
     )
@@ -169,11 +183,12 @@ class MeetingForm(FlaskForm):
          'Выберите время встречи.',
         validators=[
             DataRequired(),
+            validate_time
         ],
         render_kw={"class": "form-control"}
     )
     description = TextAreaField(
-         'Здесь В можете указать любую дополнительную информацию.',
+         'Тут можно указать любую дополнительную информацию.',
         render_kw={"class": "form-control", 'placeholder': 'Например: играю только с девчонками и на раздевание'}
     )
     submit = SubmitField(
