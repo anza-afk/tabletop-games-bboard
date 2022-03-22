@@ -171,5 +171,5 @@ def create_app():
     def meets():
         title = 'LFG'
         meets_list = Meeting.query.all()
-        return render_template('meets.html', meets_list=meets_list, title=title)
+        return render_template('meets.html', meets_list=meets_list, page_title=title)
     return app

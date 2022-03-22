@@ -24,7 +24,6 @@ def add_profile(new_profile: UserProfile) -> None:
         session.commit()
 
 
-
 def update_profile(form, user_id) -> None:
     with db_session() as session:    
         profile = session.query(UserProfile).filter(UserProfile.owner_id == user_id.id).first()
@@ -39,12 +38,12 @@ def update_profile(form, user_id) -> None:
         profile.desired_games = form['desired_games'].data,
         profile.about_user = form['about_user'].data
         print(profile.surname)
-        db_session.commit()
-
+        session.commit()
+        
 
 def join_profile(user_id):
     with db_session() as session:
-        result = db_session.query(UserProfile).filter(UserProfile.owner_id == user_id).first()
+        result = session.query(UserProfile).filter(UserProfile.owner_id == user_id).first()
     return result
 
 
@@ -53,10 +52,10 @@ def add_meeting(new_meeting: Meeting) -> bool:
     Записывает данные новой встречи в БД.
     Возвращает результат записи.
     """
-    try:
-        with db_session() as session:
-            session.add(new_meeting)
-            session.commit()
-        return True
-    except sqlalchemy.exc: #  sqlalchemy.exc не обрабатываются, нужно понять как обрабатывать
-        return False
+    #try:
+    with db_session() as session:
+        session.add(new_meeting)
+        session.commit()
+    return True
+    #except sqlalchemy.exc: #  sqlalchemy.exc не обрабатываются, нужно понять как обрабатывать
+    #    return False
