@@ -59,3 +59,9 @@ def add_meeting(new_meeting: Meeting) -> bool:
     return True
     #except sqlalchemy.exc: #  sqlalchemy.exc не обрабатываются, нужно понять как обрабатывать
     #    return False
+
+def paginate(query, page_number, page_limit):
+    if page_number > 1:
+        query = query.offset(page_number*page_limit)
+    query = query.limit(page_limit)
+    return query.all()
