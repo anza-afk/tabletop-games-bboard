@@ -27,8 +27,8 @@ def add_profile(new_profile: UserProfile) -> None:
 
 def update_profile(form, user_id) -> None:
     with db_session() as session:    
-        profile = db_session.query(UserProfile).filter(UserProfile.owner_id == user_id.id).first()
-        profile_email = db_session.query(User).filter(User.email == user_id.email).first()
+        profile = session.query(UserProfile).filter(UserProfile.owner_id == user_id.id).first()
+        profile_email = session.query(User).filter(User.email == user_id.email).first()
         profile_email.email = form['email'].data
         profile.owner_id = user_id.id,
         profile.name = form['name'].data,
@@ -55,8 +55,8 @@ def add_meeting(new_meeting: Meeting) -> bool:
     """
     try:
         with db_session() as session:
-            db_session.add(new_meeting)
-            db_session.commit()
+            session.add(new_meeting)
+            session.commit()
         return True
     except sqlalchemy.exc: #  sqlalchemy.exc не обрабатываются, нужно понять как обрабатывать
         return False
