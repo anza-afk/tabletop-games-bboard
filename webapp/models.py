@@ -64,7 +64,7 @@ class Meeting(Base, UserMixin):
     user = relationship('User', backref='meetings', foreign_keys=[owner_id],  lazy='joined')
 
     def meetings_count(self):
-        return f'{user}\'s {Meeting.game_name}'
+        return f'{self.user}\'s {Meeting.game_name}'
 
 if __name__ == '__main__':
     Base.metadata.create_all(bind=engine)
