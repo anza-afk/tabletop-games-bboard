@@ -9,6 +9,7 @@ from webapp.forms import LoginForm, RegistrationForm, ProfileForm, MeetingForm
 from webapp.users import add_user, add_profile, join_profile, update_profile, add_meeting, paginate
 from webapp.models import User, UserProfile, Meeting
 from webapp.config import GAMES_PER_PAGE
+from math import ceil
 
 def create_app():
     app = Flask(__name__)
@@ -170,12 +171,14 @@ def create_app():
         )
 
     @app.route('/meets', methods=['POST', 'GET'])
-#    @app.route('/meets/<int:page>', methods=['POST', 'GET'])
+    @app.route('/meets/<int:page>', methods=['POST', 'GET'])
     @login_required 
-    def meets(page = 1):
+    def meets(page=1):
         title = 'LFG'
-#        meets_list = paginate(db.db_session.query(Meeting), page, GAMES_PER_PAGE)
-        meets_list = db.db_session.query(Meeting).all()
-        return render_template('meets.html', meets_list=meets_list, page_title=title)
+        with db.db_session() as session:
+            query = session.query(Meeting)
+            meets_list = paginate(query, page, GAMES_PER_PAGE).all()
+            last_page = ceil(session.query(Meeting).count()/GAMES_PER_PAGE)
+        return render_template('meets.html', meets_list=meets_list, page_title=title, current_page=page, last_page=last_page)
         
     return app

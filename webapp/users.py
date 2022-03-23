@@ -61,7 +61,7 @@ def add_meeting(new_meeting: Meeting) -> bool:
     #    return False
 
 def paginate(query, page_number, page_limit):
-    if page_number > 1:
-        query = query.offset(page_number*page_limit)
     query = query.limit(page_limit)
-    return query.all()
+    if page_number > 1:
+        query = query.offset((page_number-1)*page_limit)
+    return query
