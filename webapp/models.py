@@ -61,11 +61,10 @@ class Meeting(Base, UserMixin):
     description = Column(String())
     wishing_to_play = Column(JSON)
     confirmed_players = Column(JSON)
-    user = relationship('User', backref='meetings', foreign_keys=[owner_id])
+    user = relationship('User', backref='meetings', foreign_keys=[owner_id],  lazy='joined')
 
     def meetings_count(self):
-        return Meeting.query.all()
-
+        return f'{self.user}\'s {Meeting.game_name}'
 
 if __name__ == '__main__':
     Base.metadata.create_all(bind=engine)
