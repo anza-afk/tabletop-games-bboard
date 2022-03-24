@@ -1,12 +1,14 @@
 from datetime import date
+from importlib.resources import read_text
+import re
 from werkzeug.security import generate_password_hash
 from flask import Flask, redirect, render_template, flash, url_for
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from flask_migrate import Migrate
 from news_parser.test_parser import result_news
 import webapp.db as db
-from webapp.forms import LoginForm, RegistrationForm, ProfileForm, MeetingForm
-from webapp.users import add_user, add_profile, join_profile, update_profile, add_meeting, paginate
+from webapp.forms import LoginForm, RegistrationForm, ProfileForm, MeetingForm, ButtonForm
+from webapp.users import add_user, add_user_to_wish_list, del_user_from_game ,add_profile, join_profile, update_profile, add_meeting, paginate
 from webapp.models import User, UserProfile, Meeting
 from webapp.config import GAMES_PER_PAGE
 from math import ceil
@@ -175,10 +177,26 @@ def create_app():
     @login_required 
     def meets(page=1):
         title = 'LFG'
+        buttons = ButtonForm()
+
+        if buttons.validate_on_submit():
+            if buttons.submit_add_wish.data:
+                add_user_to_wish_list(current_user.id, buttons.current_meet.data)
+                return redirect(url_for('meets'))
+            if buttons.submit_del.data:
+                del_user_from_game(current_user.id, buttons.current_meet.data)
+                return redirect(url_for('meets'))
+            if buttons.submit_edit.data:
+                return redirect(url_for('profile'))
+
+
         with db.db_session() as session:
             query = session.query(Meeting)
             meets_list = paginate(query, page, GAMES_PER_PAGE).all()
             last_page = ceil(session.query(Meeting).count()/GAMES_PER_PAGE)
-        return render_template('meets.html', meets_list=meets_list, page_title=title, current_page=page, last_page=last_page)
-        
+        return render_template(
+            'meets.html', meets_list=meets_list, page_title=title, current_page=page,
+            last_page=last_page, buttons=buttons, current_user=current_user)
+
+
     return app

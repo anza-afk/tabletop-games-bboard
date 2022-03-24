@@ -6,8 +6,8 @@
 <section class="content container bg-light">
   <div class="col-8">
     {% for meet in meets_list %}
-    <div class="card">    
-        <div class="card-body">
+    <div class="card ">    
+        <div class="card-body col-8">
           <h5 class="card-title">{{ meet.game_name }}</h5>
           <a href="#" data-toggle="modal" data-target="#ProfileModal{{meet.user.id}}" class="link-primary"><h6 class="card-subtitle mb-2 text-primary">by: {{ meet.user.username }}</h6></a>
             <!-- Modal -->
@@ -48,38 +48,58 @@
                 <small>Опубликовано: {{ meet.date_create }}</small>
             </p>
         </div>
+
+        <form action="" method="post" class="pb-3 pl-3">
+          {{ buttons.hidden_tag() }}
+
+            {{ buttons.current_meet(value=meet.id, hidden=True) }}
+
+          {% if meet.owner_id != current_user.id %}
+
+            {% if not meet.wishing_to_play or current_user.id not in meet.wishing_to_play %}
+              {{ buttons.submit_add_wish() }}
+            {% elif current_user.id in meet.wishing_to_play %}
+              {{ buttons.submit_del() }}
+            {% endif %}
+
+          {% else %}
+            {{ buttons.submit_edit() }}
+          {% endif %}
+
+        </form>
+
     </div>
 
 
     {% endfor %}
     <nav aria-label="Page navigation example">
-  <ul class="pagination">
-    {% if current_page != 1 and current_page-1 !=1 and current_page-2 !=1 %}
-    <li class="page-item"><a class="page-link" href="/meets/1">1</a></li>
-    {% endif %}
-    {% if current_page-1 > 1 %}
-    <li class="page-item"><a class="page-link" href="/meets/{{ current_page-2 }}">{{ current_page-2 }}</a></li>
-    {% endif %}
-    
-    {% if current_page > 1 %}
-    <li class="page-item"><a class="page-link" href="/meets/{{ current_page-1 }}">{{ current_page-1 }}</a></li>
-    {% endif %}
-    
-    <li class="page-item"><a class="page-link bg-primary text-white" href="#">{{ current_page }}</a></li>
-    
-    {% if current_page+1 < last_page %}
-    <li class="page-item"><a class="page-link" href="/meets/{{ current_page+1 }}">{{ current_page+1 }}</a></li>
-    {% endif %}
-    {% if current_page+2 < last_page %}
-    <li class="page-item"><a class="page-link" href="/meets/{{ current_page+2 }}">{{ current_page+2 }}</a></li>
-    {% endif %}
-    {% if current_page != last_page %}
-    <li class="page-item"><a class="page-link" href="/meets/{{ last_page }}">{{ last_page }}</a></li>
-    {% endif %}
-  </ul>
-  </div>  
-  
-  </nav>
+      <ul class="pagination">
+        {% if current_page != 1 and current_page-1 !=1 and current_page-2 !=1 %}
+        <li class="page-item"><a class="page-link" href="/meets/1">1</a></li>
+        {% endif %}
+        {% if current_page-1 > 1 %}
+        <li class="page-item"><a class="page-link" href="/meets/{{ current_page-2 }}">{{ current_page-2 }}</a></li>
+        {% endif %}
+        
+        {% if current_page > 1 %}
+        <li class="page-item"><a class="page-link" href="/meets/{{ current_page-1 }}">{{ current_page-1 }}</a></li>
+        {% endif %}
+        
+        <li class="page-item"><a class="page-link bg-primary text-white" href="#">{{ current_page }}</a></li>
+        
+        {% if current_page+1 < last_page %}
+        <li class="page-item"><a class="page-link" href="/meets/{{ current_page+1 }}">{{ current_page+1 }}</a></li>
+        {% endif %}
+        {% if current_page+2 < last_page %}
+        <li class="page-item"><a class="page-link" href="/meets/{{ current_page+2 }}">{{ current_page+2 }}</a></li>
+        {% endif %}
+        {% if current_page != last_page %}
+        <li class="page-item"><a class="page-link" href="/meets/{{ last_page }}">{{ last_page }}</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+
+  </div> 
 
 </section>
 
