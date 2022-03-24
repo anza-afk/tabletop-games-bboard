@@ -66,7 +66,12 @@ def paginate(query, page_number, page_limit):
     return query
 
 
-def add_user_to_wish_list(user_id, meet_id):
+
+
+
+
+
+def add_user_to_wish_list(user_id: int, meet_id: int) -> None:
     """
     Если желающих играть еще нет - создается список в который помещается
     текущий пользователь. Если желающие есть, то текущий пользователь
@@ -81,7 +86,7 @@ def add_user_to_wish_list(user_id, meet_id):
         session.commit()
 
 
-def del_user_from_game(user_id, meet_id):
+def del_user_from_game(user_id: int, meet_id: int) -> None:
     """
     Если пользователь в списке желающих(или подтвержденных), то список преобразуется
     во множество, после чего из него удаляется пользователь и

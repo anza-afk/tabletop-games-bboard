@@ -1,6 +1,5 @@
 from dataclasses import Field, fields
 import datetime
-# from wsgiref.validate import validators
 from webapp.db import db_session
 from webapp.models import User
 from flask_wtf import FlaskForm
@@ -200,16 +199,13 @@ class ButtonForm(FlaskForm):
 
     submit_add_wish = SubmitField(
         'Участвовать',
-
         render_kw={"class": "btn btn-primary"}
     )
     submit_del = SubmitField(
         'Покинуть встречу',
-
         render_kw={"class": "btn btn-primary"}
     )
     submit_edit = SubmitField(
         'Редактировать встречу в профиле',
-
         render_kw={"class": "btn btn-primary"}
     )

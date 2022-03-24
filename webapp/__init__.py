@@ -1,6 +1,4 @@
 from datetime import date
-from importlib.resources import read_text
-import re
 from werkzeug.security import generate_password_hash
 from flask import Flask, redirect, render_template, flash, url_for
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
@@ -172,6 +170,19 @@ def create_app():
             form=meeting_form
         )
 
+
+
+
+
+
+
+
+
+
+
+
+
+
     @app.route('/meets', methods=['POST', 'GET'])
     @app.route('/meets/<int:page>', methods=['POST', 'GET'])
     @login_required 
@@ -188,7 +199,6 @@ def create_app():
                 return redirect(url_for('meets'))
             if buttons.submit_edit.data:
                 return redirect(url_for('profile'))
-
 
         with db.db_session() as session:
             query = session.query(Meeting)
