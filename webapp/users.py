@@ -65,3 +65,8 @@ def paginate(query, page_number, page_limit):
     if page_number > 1:
         query = query.offset((page_number-1)*page_limit)
     return query
+
+def join_meets(user_id):
+    with db_session() as session:
+        result = session.query(Meeting).filter(Meeting.owner_id == user_id).all()
+    return result
