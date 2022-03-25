@@ -65,37 +65,3 @@ def paginate(query, page_number, page_limit):
         query = query.offset((page_number-1)*page_limit)
     return query
 
-
-
-
-
-
-
-def add_user_to_wish_list(user_id: int, meet_id: int) -> None:
-    """
-    Если желающих играть еще нет - создается список в который помещается
-    текущий пользователь. Если желающие есть, то текущий пользователь
-    добавляется к ним.
-    """
-    with db_session() as session:
-        meet = session.query(Meeting).filter(Meeting.id == meet_id).first()
-        if not meet.wishing_to_play:
-            meet.wishing_to_play = [user_id]
-        if user_id not in meet.wishing_to_play:
-            meet.wishing_to_play = meet.wishing_to_play + [user_id]
-        session.commit()
-
-
-def del_user_from_game(user_id: int, meet_id: int) -> None:
-    """
-    Если пользователь в списке желающих(или подтвержденных), то список преобразуется
-    во множество, после чего из него удаляется пользователь и
-    множество обратно преобразуется в список.
-    """
-    with db_session() as session:
-        meet = session.query(Meeting).filter(Meeting.id == meet_id).first()
-        if user_id in meet.wishing_to_play:
-            meet.wishing_to_play = list(set(meet.wishing_to_play) - {user_id})
-        elif user_id in meet.confirmed_players:
-            meet.confirmed_players = list(set(meet.confirmed_players) - {user_id})
-        session.commit()

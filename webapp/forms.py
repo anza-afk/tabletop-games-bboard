@@ -3,8 +3,8 @@ import datetime
 from webapp.db import db_session
 from webapp.models import User
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, DateField, TextAreaField, TimeField, HiddenField
-from wtforms.validators import DataRequired, EqualTo, Email, ValidationError, Length
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, DateField, TextAreaField, TimeField
+from wtforms.validators import DataRequired, EqualTo, Email, ValidationError, Length, NumberRange
 
 
 class LoginForm(FlaskForm):
@@ -148,8 +148,9 @@ class MeetingForm(FlaskForm):
          'Укажите количество игроков, которых Вы хотите найти.',
         validators=[
             DataRequired(),
+            NumberRange(min=1, max=50, message="Нужно указать значение от 1 до 50")
         ],
-        render_kw={"class": "form-control", 'placeholder': 'Не менее одного игрока'}
+        render_kw={"class": "form-control", 'placeholder': 'От 1 до 50 игроков'}
     )
     meeting_place = StringField(
          'Укажите место встречи.',
