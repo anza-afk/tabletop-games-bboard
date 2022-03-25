@@ -1,6 +1,6 @@
 from webapp.db import db_session
 from webapp.models import User, UserProfile
-from webapp.models import Meeting
+from webapp.models import GameMeeting
 import sqlalchemy.exc
 
 
@@ -46,7 +46,7 @@ def join_profile(user_id):
         return session.query(UserProfile).filter(UserProfile.owner_id == user_id).first()
 
 
-def add_meeting(new_meeting: Meeting) -> bool:
+def add_meeting(new_meeting: GameMeeting) -> bool:
     """
     Записывает данные новой встречи в БД.
     Возвращает результат записи.
@@ -67,4 +67,4 @@ def paginate(query, page_number, page_limit):
 
 def join_meets(user_id):
     with db_session() as session:
-        return session.query(Meeting).filter(Meeting.owner_id == user_id).all()
+        return session.query(GameMeeting).filter(GameMeeting.owner_id == user_id).all()

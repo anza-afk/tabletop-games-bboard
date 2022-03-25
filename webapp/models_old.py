@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, JSON, ForeignKey, Date, Time, DateTime
+from sqlalchemy import Column, Integer, String, JSON, ForeignKey, Date, Time
 from sqlalchemy.orm import relationship
 from webapp.db import Base, engine
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -47,21 +47,24 @@ class UserProfile(Base, UserMixin):
         return f'Пользователь {self.name}'
 
 
-class GameMeeting(Base, UserMixin):
-    __tablename__ = 'game_meetings'
+class Meeting(Base, UserMixin):
+    __tablename__ = 'meetings'
 
     id = Column(Integer, primary_key=True)
     owner_id = Column(Integer(), ForeignKey('users.id'))
     game_name = Column(String(), index=True)
-    create_date = Column(Date())
+    date_create = Column(Date())
     number_of_players = Column(Integer())
     meeting_place = Column(String())
-    meeting_date_time = Column(DateTime(timezone=True))
+    date_meeting = Column(Date())
+    time_meeting = Column(Time())
     description = Column(String())
-    subscribed_players = Column(JSON)
+    wishing_to_play = Column(JSON)
     confirmed_players = Column(JSON)
-    user = relationship('User', backref='game_meetings', foreign_keys=[owner_id],  lazy='joined')
+    user = relationship('User', backref='meetings', foreign_keys=[owner_id],  lazy='joined')
 
+    def meetings_count(self):
+        return f'{self.user}\'s {Meeting.game_name}'
 
 if __name__ == '__main__':
     Base.metadata.create_all(bind=engine)
