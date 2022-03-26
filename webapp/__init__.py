@@ -1,12 +1,15 @@
 from datetime import date
+from doctest import REPORTING_FLAGS
 from werkzeug.security import generate_password_hash
 from flask import Flask, redirect, render_template, flash, url_for
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from flask_migrate import Migrate
 from news_parser.test_parser import result_news
 import webapp.db as db
-from webapp.forms import LoginForm, RegistrationForm, ProfileForm, MeetingForm
+
+from webapp.forms import LoginForm, RegistrationForm, ProfileForm, MeetingForm, ButtonForm
 from webapp.users import add_user, add_profile, join_profile, join_meets, update_profile, add_meeting, paginate
+
 from webapp.models import User, UserProfile, Meeting
 from webapp.config import GAMES_PER_PAGE
 from math import ceil
@@ -168,9 +171,10 @@ def create_app():
                 meeting_place=meeting_form['meeting_place'].data,
                 date_meeting=meeting_form['date_meeting'].data,
                 time_meeting=meeting_form['time_meeting'].data,
-                description=meeting_form['description'].data
+                description=meeting_form['description'].data,
+                wishing_to_play=[],
+                confirmed_players=[],
                 )
-
             if add_meeting(new_meeting):
                 flash('Вы успешно создали встречу!')
                 return redirect(url_for('index'))
@@ -183,15 +187,39 @@ def create_app():
             form=meeting_form
         )
 
+
     @app.route('/meets', methods=['POST', 'GET'])
     @app.route('/meets/<int:page>', methods=['POST', 'GET'])
     @login_required 
     def meets(page=1):
         title = 'LFG'
+        buttons = ButtonForm()
+
+        if buttons.validate_on_submit():
+            if buttons.submit_add_wish.data:
+                with db.db_session() as session:
+                    meet = session.query(Meeting).filter(Meeting.id == buttons.current_meet.data).first()
+                    meet.add_user(current_user.id)
+                    session.commit()
+                return redirect(url_for('meets'))
+
+            if buttons.submit_del.data:
+                with db.db_session() as session:
+                    meet = session.query(Meeting).filter(Meeting.id == buttons.current_meet.data).first()
+                    meet.del_user(current_user.id)
+                    session.commit()
+                return redirect(url_for('meets'))
+
+            if buttons.submit_edit.data:
+                return redirect(url_for('profile'))
+
         with db.db_session() as session:
             query = session.query(Meeting).order_by(Meeting.date_meeting.asc(), Meeting.time_meeting.asc())
             meets_list = paginate(query, page, GAMES_PER_PAGE).all()
             last_page = ceil(session.query(Meeting).count()/GAMES_PER_PAGE)
-        return render_template('meets.html', meets_list=meets_list, page_title=title, current_page=page, last_page=last_page)
-        
+        return render_template(
+            'meets.html', meets_list=meets_list, page_title=title, current_page=page,
+            last_page=last_page, buttons=buttons, current_user=current_user)
+
+
     return app

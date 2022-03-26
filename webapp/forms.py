@@ -1,11 +1,10 @@
 from dataclasses import Field, fields
 import datetime
-# from wsgiref.validate import validators
 from webapp.db import db_session
 from webapp.models import User
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, DateField, TextAreaField, TimeField
-from wtforms.validators import DataRequired, EqualTo, Email, ValidationError, Length
+from wtforms.validators import DataRequired, EqualTo, Email, ValidationError, Length, NumberRange
 
 
 class LoginForm(FlaskForm):
@@ -149,8 +148,9 @@ class MeetingForm(FlaskForm):
          'Укажите количество игроков, которых Вы хотите найти.',
         validators=[
             DataRequired(),
+            NumberRange(min=1, max=50, message="Нужно указать значение от 1 до 50")
         ],
-        render_kw={"class": "form-control", 'placeholder': 'Не менее одного игрока'}
+        render_kw={"class": "form-control", 'placeholder': 'От 1 до 50 игроков'}
     )
     meeting_place = StringField(
          'Укажите место встречи.',
@@ -193,3 +193,20 @@ class MeetingForm(FlaskForm):
         if self.date_meeting.data == datetime.date.today():
             if time_meeting.data < datetime.datetime.now().time():
                 raise ValidationError("Время не может быть в прошлом!")
+
+
+class ButtonForm(FlaskForm):
+    current_meet = IntegerField()
+
+    submit_add_wish = SubmitField(
+        'Участвовать',
+        render_kw={"class": "btn btn-primary"}
+    )
+    submit_del = SubmitField(
+        'Покинуть встречу',
+        render_kw={"class": "btn btn-primary"}
+    )
+    submit_edit = SubmitField(
+        'Редактировать встречу в профиле',
+        render_kw={"class": "btn btn-primary"}
+    )

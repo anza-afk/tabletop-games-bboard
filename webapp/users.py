@@ -37,7 +37,6 @@ def update_profile(form, user_id) -> None:
         profile.favorite_games = form['favorite_games'].data,
         profile.desired_games = form['desired_games'].data,
         profile.about_user = form['about_user'].data
-        print(profile.surname)
         session.commit()
         
 
@@ -64,6 +63,7 @@ def paginate(query, page_number, page_limit):
     if page_number > 1:
         query = query.offset((page_number-1)*page_limit)
     return query
+
 
 def join_meets(user_id):
     with db_session() as session:
