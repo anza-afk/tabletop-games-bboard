@@ -66,21 +66,22 @@ class GameMeeting(Base, UserMixin):
         """
         Добавляет пользователя в список желающих принять участие.
         """
-        if user_id not in self.wishing_to_play:
-            self.wishing_to_play = self.wishing_to_play + [user_id]
+        if user_id not in self.subscribed_players:
+            self.subscribed_players = self.subscribed_players + [user_id]
 
     def del_user(self, user_id: int, owner_id=None) -> None:
         """
         Удаляет пользователя из списка желающих или списка
         подтвержденных участников.
-        """ 
-        if user_id in self.wishing_to_play:
-            self.wishing_to_play = list(set(self.wishing_to_play) - {user_id})
+        """
+        if user_id in self.subscribed_players:
+            self.subscribed_players = list(set(self.subscribed_players) - {user_id})
         elif (user_id in self.confirmed_players) or (owner_id and owner_id == self.owner_id):
             self.confirmed_players = list(set(self.confirmed_players) - {user_id})
 
     def meetings_count(self):
         return f'{self.user}\'s {GameMeeting.game_name}'
+
 
 if __name__ == '__main__':
     Base.metadata.create_all(bind=engine)
