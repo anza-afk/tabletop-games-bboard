@@ -5,12 +5,12 @@ from flask import Flask, redirect, render_template, flash, url_for
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from news_parser.test_parser import result_news
 import webapp.db as db
-
 from webapp.forms import LoginForm, RegistrationForm, ProfileForm, MeetingForm, ButtonForm
 from webapp.users import add_user, add_profile, join_profile, join_meets, update_profile, add_meeting, paginate
 from webapp.models import User, UserProfile, GameMeeting
 from webapp.config import GAMES_PER_PAGE
 from math import ceil
+
 
 def create_app():
     app = Flask(__name__)
@@ -95,7 +95,6 @@ def create_app():
             form=registration_form
         )
 
-    
     @app.route('/profile')
     @login_required
     def profile():
@@ -142,12 +141,10 @@ def create_app():
             about_user=form['about_user'].data
         )
 
-        #  email_for_user = User()
         add_profile(new_profile)
         flash('Личные данные успешно сохранены!')
         return redirect(url_for('profile'))
 
-   
     @app.route('/create_meeting', methods=['POST', 'GET'])
     @login_required
     def create_meeting():
@@ -165,13 +162,13 @@ def create_app():
                 owner_id=current_user.id,
                 create_date=date.today(),
                 number_of_players=meeting_form['number_of_players'].data,
-                meeting_place=meeting_form['meeting_place'].data,                
-                meeting_date_time = f"{meeting_form['date_meeting'].data} {meeting_form['time_meeting'].data}",
+                meeting_place=meeting_form['meeting_place'].data,
+                meeting_date_time=f"{meeting_form['date_meeting'].data} {meeting_form['time_meeting'].data}",
                 description=meeting_form['description'].data,
-                wishing_to_play=[],
+                subscribed_players=[],
                 confirmed_players=[],
-                )
-            
+            )
+
             if add_meeting(new_meeting):
                 flash('Вы успешно создали встречу!')
                 return redirect(url_for('index'))
@@ -184,10 +181,9 @@ def create_app():
             form=meeting_form
         )
 
-
     @app.route('/meets', methods=['POST', 'GET'])
     @app.route('/meets/<int:page>', methods=['POST', 'GET'])
-    @login_required 
+    @login_required
     def meets(page=1):
         title = 'LFG'
         buttons = ButtonForm()
@@ -195,14 +191,14 @@ def create_app():
         if buttons.validate_on_submit():
             if buttons.submit_add_wish.data:
                 with db.db_session() as session:
-                    meet = session.query(Meeting).filter(Meeting.id == buttons.current_meet.data).first()
+                    meet = session.query(GameMeeting).filter(GameMeeting.id == buttons.current_meet.data).first()
                     meet.add_user(current_user.id)
                     session.commit()
                 return redirect(url_for('meets'))
 
             if buttons.submit_del.data:
                 with db.db_session() as session:
-                    meet = session.query(Meeting).filter(Meeting.id == buttons.current_meet.data).first()
+                    meet = session.query(GameMeeting).filter(GameMeeting.id == buttons.current_meet.data).first()
                     meet.del_user(current_user.id)
                     session.commit()
                 return redirect(url_for('meets'))

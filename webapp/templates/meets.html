@@ -56,9 +56,9 @@
 
           {% if meet.owner_id != current_user.id %}
 
-            {% if not meet.wishing_to_play or current_user.id not in meet.wishing_to_play %}
+            {% if current_user.id not in meet.subscribed_players %}
               {{ buttons.submit_add_wish() }}
-            {% elif current_user.id in meet.wishing_to_play %}
+            {% elif current_user.id in meet.subscribed_players %}
               {{ buttons.submit_del() }}
             {% endif %}
 
