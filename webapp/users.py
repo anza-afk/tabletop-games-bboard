@@ -42,8 +42,7 @@ def update_profile(form, user_id) -> None:
 
 def join_profile(user_id):
     with db_session() as session:
-        result = session.query(UserProfile).filter(UserProfile.owner_id == user_id).first()
-    return result
+        return session.query(UserProfile).filter(UserProfile.owner_id == user_id).first()
 
 
 def add_meeting(new_meeting: Meeting) -> bool:
@@ -65,3 +64,7 @@ def paginate(query, page_number, page_limit):
         query = query.offset((page_number-1)*page_limit)
     return query
 
+
+def join_meets(user_id):
+    with db_session() as session:
+        return session.query(Meeting).filter(Meeting.owner_id == user_id).all()

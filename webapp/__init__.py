@@ -6,8 +6,10 @@ from flask_login import LoginManager, current_user, login_user, logout_user, log
 from flask_migrate import Migrate
 from news_parser.test_parser import result_news
 import webapp.db as db
+
 from webapp.forms import LoginForm, RegistrationForm, ProfileForm, MeetingForm, ButtonForm
-from webapp.users import add_user, add_profile, join_profile, update_profile, add_meeting, paginate
+from webapp.users import add_user, add_profile, join_profile, join_meets, update_profile, add_meeting, paginate
+
 from webapp.models import User, UserProfile, Meeting
 from webapp.config import GAMES_PER_PAGE
 from math import ceil
@@ -102,9 +104,22 @@ def create_app():
     def profile():
         title = f'Профиль {current_user.username}'
         profile_data = join_profile(current_user.id)
-        profile_form = ProfileForm()
+        meets_data = join_meets(current_user.id)
         return render_template(
             'profile.html',
+            page_title=title,
+            profile_data=profile_data,
+            meets_data=meets_data
+        )
+
+    @app.route('/edit_profile')
+    @login_required
+    def edit_profile():
+        title = f'Профиль {current_user.username}'
+        profile_data = join_profile(current_user.id)
+        profile_form = ProfileForm()
+        return render_template(
+            'edit_profile.html',
             page_title=title,
             form=profile_form,
             profile_data=profile_data
@@ -199,7 +214,7 @@ def create_app():
                 return redirect(url_for('profile'))
 
         with db.db_session() as session:
-            query = session.query(Meeting)
+            query = session.query(Meeting).order_by(Meeting.date_meeting.asc(), Meeting.time_meeting.asc())
             meets_list = paginate(query, page, GAMES_PER_PAGE).all()
             last_page = ceil(session.query(Meeting).count()/GAMES_PER_PAGE)
         return render_template(
