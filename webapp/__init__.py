@@ -3,14 +3,12 @@ from doctest import REPORTING_FLAGS
 from werkzeug.security import generate_password_hash
 from flask import Flask, redirect, render_template, flash, url_for
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
-from flask_migrate import Migrate
 from news_parser.test_parser import result_news
 import webapp.db as db
 
 from webapp.forms import LoginForm, RegistrationForm, ProfileForm, MeetingForm, ButtonForm
 from webapp.users import add_user, add_profile, join_profile, join_meets, update_profile, add_meeting, paginate
-
-from webapp.models import User, UserProfile, Meeting
+from webapp.models import User, UserProfile, GameMeeting
 from webapp.config import GAMES_PER_PAGE
 from math import ceil
 
@@ -22,7 +20,6 @@ def create_app():
     login_manager.init_app(app)
     login_manager.login_view = 'login'
     login_manager.login_message = 'Для доступа на эта страницу необходимо авторизоваться!'
-    migrate = Migrate(app, db)
 
     @login_manager.user_loader
     def load_user(user_id):
@@ -163,18 +160,18 @@ def create_app():
         meeting_form = MeetingForm()
 
         if meeting_form.validate_on_submit():
-            new_meeting = Meeting(
+            new_meeting = GameMeeting(
                 game_name=meeting_form['game_name'].data,
                 owner_id=current_user.id,
-                date_create=date.today(),
+                create_date=date.today(),
                 number_of_players=meeting_form['number_of_players'].data,
-                meeting_place=meeting_form['meeting_place'].data,
-                date_meeting=meeting_form['date_meeting'].data,
-                time_meeting=meeting_form['time_meeting'].data,
+                meeting_place=meeting_form['meeting_place'].data,                
+                meeting_date_time = f"{meeting_form['date_meeting'].data} {meeting_form['time_meeting'].data}",
                 description=meeting_form['description'].data,
                 wishing_to_play=[],
                 confirmed_players=[],
                 )
+            
             if add_meeting(new_meeting):
                 flash('Вы успешно создали встречу!')
                 return redirect(url_for('index'))
@@ -214,12 +211,11 @@ def create_app():
                 return redirect(url_for('profile'))
 
         with db.db_session() as session:
-            query = session.query(Meeting).order_by(Meeting.date_meeting.asc(), Meeting.time_meeting.asc())
+            query = session.query(GameMeeting).order_by(GameMeeting.meeting_date_time.asc())
             meets_list = paginate(query, page, GAMES_PER_PAGE).all()
-            last_page = ceil(session.query(Meeting).count()/GAMES_PER_PAGE)
+            last_page = ceil(session.query(GameMeeting).count()/GAMES_PER_PAGE)
         return render_template(
             'meets.html', meets_list=meets_list, page_title=title, current_page=page,
             last_page=last_page, buttons=buttons, current_user=current_user)
-
 
     return app
