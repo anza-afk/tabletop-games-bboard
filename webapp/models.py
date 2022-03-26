@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, JSON, ForeignKey, Date, Time, DateTime
 from sqlalchemy.orm import relationship
-from webapp.db import Base, engine
+from webapp.db import Base, engine, db_session
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
@@ -25,7 +25,7 @@ class User(Base, UserMixin):
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
-
+        
     def __repr__(self) -> str:
         return f'Пользователь {self.username} - {self.email}'
 
@@ -62,6 +62,25 @@ class GameMeeting(Base, UserMixin):
     confirmed_players = Column(JSON)
     user = relationship('User', backref='game_meetings', foreign_keys=[owner_id],  lazy='joined')
 
+    def add_user(self, user_id: int) -> None:
+        """
+        Добавляет пользователя в список желающих принять участие.
+        """
+        if user_id not in self.wishing_to_play:
+            self.wishing_to_play = self.wishing_to_play + [user_id]
+
+    def del_user(self, user_id: int, owner_id=None) -> None:
+        """
+        Удаляет пользователя из списка желающих или списка
+        подтвержденных участников.
+        """ 
+        if user_id in self.wishing_to_play:
+            self.wishing_to_play = list(set(self.wishing_to_play) - {user_id})
+        elif (user_id in self.confirmed_players) or (owner_id and owner_id == self.owner_id):
+            self.confirmed_players = list(set(self.confirmed_players) - {user_id})
+
+    def meetings_count(self):
+        return f'{self.user}\'s {GameMeeting.game_name}'
 
 if __name__ == '__main__':
     Base.metadata.create_all(bind=engine)

@@ -1,10 +1,12 @@
 from datetime import date
+from doctest import REPORTING_FLAGS
 from werkzeug.security import generate_password_hash
 from flask import Flask, redirect, render_template, flash, url_for
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from news_parser.test_parser import result_news
 import webapp.db as db
-from webapp.forms import LoginForm, RegistrationForm, ProfileForm, MeetingForm
+
+from webapp.forms import LoginForm, RegistrationForm, ProfileForm, MeetingForm, ButtonForm
 from webapp.users import add_user, add_profile, join_profile, join_meets, update_profile, add_meeting, paginate
 from webapp.models import User, UserProfile, GameMeeting
 from webapp.config import GAMES_PER_PAGE
@@ -163,17 +165,18 @@ def create_app():
                 owner_id=current_user.id,
                 create_date=date.today(),
                 number_of_players=meeting_form['number_of_players'].data,
-                meeting_place=meeting_form['meeting_place'].data,
+                meeting_place=meeting_form['meeting_place'].data,                
                 meeting_date_time = f"{meeting_form['date_meeting'].data} {meeting_form['time_meeting'].data}",
-                description=meeting_form['description'].data
+                description=meeting_form['description'].data,
+                wishing_to_play=[],
+                confirmed_players=[],
                 )
-
+            
             if add_meeting(new_meeting):
                 flash('Вы успешно создали встречу!')
                 return redirect(url_for('index'))
 
             flash('Ошибка создания встречи, попробуйте повторить позже.')
-            return redirect(url_for('server_error')) # УДАЛИТЬ
 
         return render_template(
             'create_meeting.html',
@@ -181,15 +184,38 @@ def create_app():
             form=meeting_form
         )
 
+
     @app.route('/meets', methods=['POST', 'GET'])
     @app.route('/meets/<int:page>', methods=['POST', 'GET'])
     @login_required 
     def meets(page=1):
         title = 'LFG'
+        buttons = ButtonForm()
+
+        if buttons.validate_on_submit():
+            if buttons.submit_add_wish.data:
+                with db.db_session() as session:
+                    meet = session.query(Meeting).filter(Meeting.id == buttons.current_meet.data).first()
+                    meet.add_user(current_user.id)
+                    session.commit()
+                return redirect(url_for('meets'))
+
+            if buttons.submit_del.data:
+                with db.db_session() as session:
+                    meet = session.query(Meeting).filter(Meeting.id == buttons.current_meet.data).first()
+                    meet.del_user(current_user.id)
+                    session.commit()
+                return redirect(url_for('meets'))
+
+            if buttons.submit_edit.data:
+                return redirect(url_for('profile'))
+
         with db.db_session() as session:
             query = session.query(GameMeeting).order_by(GameMeeting.meeting_date_time.asc())
             meets_list = paginate(query, page, GAMES_PER_PAGE).all()
             last_page = ceil(session.query(GameMeeting).count()/GAMES_PER_PAGE)
-        return render_template('meets.html', meets_list=meets_list, page_title=title, current_page=page, last_page=last_page)
-        
+        return render_template(
+            'meets.html', meets_list=meets_list, page_title=title, current_page=page,
+            last_page=last_page, buttons=buttons, current_user=current_user)
+
     return app
