@@ -1,11 +1,11 @@
-from sqlalchemy import Column, Integer, String, JSON, ForeignKey, Date, Time, DateTime
+from sqlalchemy import Column, Integer, String, JSON, ForeignKey, Date, DateTime, Boolean
 from sqlalchemy.orm import relationship
-from webapp.db import Base, engine, db_session
+from webapp.database import Base, engine, db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
 
-class User(Base, UserMixin):
+class User(db.Model, UserMixin):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True)
@@ -19,18 +19,19 @@ class User(Base, UserMixin):
         uselist=False,
         lazy='joined'
     )
+    user_meetings = relationship("MeetingUser", back_populates='user', lazy='joined')
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
-        
+
     def __repr__(self) -> str:
         return f'Пользователь {self.username} - {self.email}'
 
 
-class UserProfile(Base, UserMixin):
+class UserProfile(db.Model, UserMixin):
     __tablename__ = 'profiles'
 
     id = Column(Integer, primary_key=True)
@@ -47,7 +48,7 @@ class UserProfile(Base, UserMixin):
         return f'Пользователь {self.name}'
 
 
-class GameMeeting(Base, UserMixin):
+class GameMeeting(db.Model, UserMixin):
     __tablename__ = 'game_meetings'
 
     id = Column(Integer, primary_key=True)
@@ -60,7 +61,8 @@ class GameMeeting(Base, UserMixin):
     description = Column(String())
     subscribed_players = Column(JSON)
     confirmed_players = Column(JSON)
-    user = relationship('User', backref='game_meetings', foreign_keys=[owner_id],  lazy='joined')
+    user = relationship('User', backref='game_meetings', foreign_keys=[owner_id], lazy='joined')
+    users = relationship('MeetingUser', lazy='joined')
 
     def add_user(self, user_id: int) -> None:
         """
@@ -81,6 +83,17 @@ class GameMeeting(Base, UserMixin):
 
     def meetings_count(self):
         return f'{self.user}\'s {GameMeeting.game_name}'
+
+
+class MeetingUser(db.Model):
+    __tablename__ = "meeting_users"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey(User.id), index=True, nullable=False)
+    meeting_id = Column(Integer, ForeignKey(GameMeeting.id), index=True, nullable=False)
+    confirmed = Column(Boolean, nullable=False)
+    meeting = relationship('GameMeeting', lazy='joined')
+    user = relationship("User", lazy='joined')
 
 
 if __name__ == '__main__':
