@@ -1,16 +1,18 @@
 from datetime import date
 from werkzeug.security import generate_password_hash
-from flask import Flask, redirect, render_template, flash, url_for
+from flask import Flask, redirect, render_template, flash, request, url_for, Response
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from flask_migrate import Migrate
 from news_parser.test_parser import result_news
 import webapp.database
 from webapp.forms import LoginForm, RegistrationForm, ProfileForm, MeetingForm, ButtonForm
 from webapp.users import add_user, add_profile, join_profile, join_meets, update_profile, add_meeting, paginate
-from webapp.models import User, UserProfile, GameMeeting, MeetingUser
+from webapp.models import User, UserProfile, GameMeeting, MeetingUser, Game
 from webapp.config import GAMES_PER_PAGE
 from webapp.database import db
 from math import ceil
+from sqlalchemy.orm import load_only
+import json
 
 migrate = Migrate()
 
@@ -27,7 +29,8 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(user_id):
-        return User.query.get(user_id)
+        with webapp.database.db_session() as session:
+            return session.query(User).get(user_id)
 
     @app.errorhandler(500)
     def server_error():
@@ -158,7 +161,7 @@ def create_app():
         новую встречу в БД.
         """
         title = 'Создание встречи'
-        meeting_form = MeetingForm()
+        meeting_form = MeetingForm(request.form)
 
         if meeting_form.validate_on_submit():
             new_meeting = GameMeeting(
@@ -182,8 +185,15 @@ def create_app():
         return render_template(
             'create_meeting.html',
             page_title=title,
-            form=meeting_form
+            form=meeting_form,
         )
+
+    @app.route('/_autocomplete', methods=['GET'])
+    def autocomplete():
+        with webapp.database.db_session() as session:
+            games_db = session.query(Game).options(load_only("name")).all()
+            games_names = [game.name for game in games_db]
+        return Response(json.dumps(games_names), mimetype='application/json')
 
     @app.route('/meets', methods=['POST', 'GET'])
     @app.route('/meets/<int:page>', methods=['POST', 'GET'])

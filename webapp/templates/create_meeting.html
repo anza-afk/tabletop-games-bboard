@@ -8,8 +8,25 @@
 
         <form action="" method="post" class="py-3">
             {{ form.hidden_tag() }}
+            <div class="form-group">
 
-          {% for field in form if field.name not in ['csrf_token', 'submit'] %}
+              {{ form.game_name.label() }}:{{ form.game_name() }}
+
+              <script>
+                $(function() {
+                  jQuery.ajax({
+                        url: '{{ url_for("autocomplete") }}'
+                        }).done(function (games_names){
+                            $('#game_autocomplete').autocomplete({
+                              source: games_names,
+                              minLength: 3,
+                              selectFirst: true
+                            });
+                        });
+                    });
+              </script>
+            
+          {% for field in form if field.name not in ['csrf_token', 'submit', 'game_name'] %}
             <div class="form-group">
               {{ field.label() }}
               {{ field() }}
