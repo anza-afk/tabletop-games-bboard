@@ -206,6 +206,6 @@ class ButtonForm(FlaskForm):
         render_kw={"class": "btn btn-primary"}
     )
     submit_edit = SubmitField(
-        'Редактировать встречу в профиле',
+        'Редактировать встречу',
         render_kw={"class": "btn btn-primary"}
     )

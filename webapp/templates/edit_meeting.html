@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="content container bg-light">
+    <div class="row">
+      <div class="col-5">
+
+        <form action="{{url_for('submit_edit_meet')}}" method="post" class="py-3">
+            {{ form.hidden_tag() }}
+
+          {% for field in form if field.name not in ['csrf_token', 'submit'] %}
+            <div class="form-group">
+              {{ field.label() }}
+              {% if field.name in ['date_meeting', 'time_meeting'] %}
+                {{ field(value=meeting_data.meeting_date_time) }}
+              {% else %}
+                {{ field(value=meeting_data[field.name]) }}
+              {% endif %}
+                <p class="error text-dark text-center">
+                  {% for e in field.errors %}
+                    {{ e }}
+                  {% endfor %}
+                </p>
+                
+            </div>
+            {% endfor %}
+
+          {{ form.submit() }}
+
+        </form>
+      
+      </div>  
+    </div>
+</section>
+{% endblock content %}   

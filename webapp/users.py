@@ -1,6 +1,8 @@
+from flask import Flask
 from webapp.database import db_session
 from webapp.models import User, UserProfile
 from webapp.models import GameMeeting
+from flask_wtf import FlaskForm
 import sqlalchemy.exc
 
 
@@ -40,6 +42,18 @@ def update_profile(form, user_id) -> None:
         session.commit()
 
 
+def update_meeting(form: FlaskForm, meeting_id: int) -> None:
+    with db_session() as session:
+        meet = session.query(GameMeeting).filter(GameMeeting.id == meeting_id).first()
+        meet.game_name = form['game_name'].data
+        meet.number_of_players = form['number_of_players'].data
+        meet.meeting_place = form['meeting_place'].data
+        meet.meeting_date_time = f"{form['date_meeting'].data} {form['time_meeting'].data}"
+        meet.description = form['description'].data
+        print(meet)
+        session.commit()
+
+
 def join_profile(user_id):
     with db_session() as session:
         return session.query(UserProfile).filter(UserProfile.owner_id == user_id).first()
@@ -66,6 +80,10 @@ def paginate(query, page_number, page_limit):
     return query
 
 
-def join_meets(user_id):
+def join_meets(user_id=None, meet_id=None):
     with db_session() as session:
-        return session.query(GameMeeting).filter(GameMeeting.owner_id == user_id).all()
+        if user_id:
+            return session.query(GameMeeting).filter(GameMeeting.owner_id == user_id).all()
+        if meet_id:
+            return session.query(GameMeeting).filter(GameMeeting.id == meet_id).one()
+        return session.query(GameMeeting).all()
