@@ -1,21 +1,25 @@
 from datetime import date
-from doctest import REPORTING_FLAGS
 from werkzeug.security import generate_password_hash
 from flask import Flask, redirect, render_template, flash, url_for
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
+from flask_migrate import Migrate
 from news_parser.test_parser import result_news
-import webapp.db as db
+import webapp.database
 from webapp.forms import LoginForm, RegistrationForm, ProfileForm, MeetingForm, ButtonForm
 from webapp.users import add_user, add_profile, join_profile, join_meets, update_profile, add_meeting, paginate
-from webapp.models import User, UserProfile, GameMeeting
+from webapp.models import User, UserProfile, GameMeeting, MeetingUser
 from webapp.config import GAMES_PER_PAGE
+from webapp.database import db
 from math import ceil
+
+migrate = Migrate()
 
 
 def create_app():
     app = Flask(__name__)
     app.config.from_pyfile('config.py')
-
+    db.init_app(app)
+    migrate.init_app(app, db)
     login_manager = LoginManager()
     login_manager.init_app(app)
     login_manager.login_view = 'login'
@@ -81,7 +85,7 @@ def create_app():
                 password=hash_pass,
                 email=registration_form['email'].data,
                 role='1'
-                )
+            )
 
             if add_user(new_user):
                 flash('Вы успешно зарегистрировались!')
@@ -190,28 +194,54 @@ def create_app():
 
         if buttons.validate_on_submit():
             if buttons.submit_add_wish.data:
-                with db.db_session() as session:
+                with webapp.database.db_session() as session:
                     meet = session.query(GameMeeting).filter(GameMeeting.id == buttons.current_meet.data).first()
-                    meet.add_user(current_user.id)
-                    session.commit()
+                    new_player = MeetingUser(
+                        user_id=current_user.id,
+                        meeting_id=meet.id,
+                        confirmed=False,
+                    )
+                    if session.query(GameMeeting).filter(
+                        MeetingUser.meeting_id == meet.id
+                    ).filter(
+                        MeetingUser.user_id == current_user.id
+                    ).all():
+                        pass  # СЮДА НАДО ДОБАВИТЬ ПОВЕДЕНИЕ
+                    else:
+                        session.add(new_player)
+                        session.commit()
                 return redirect(url_for('meets'))
 
             if buttons.submit_del.data:
-                with db.db_session() as session:
+                with webapp.database.db_session() as session:
                     meet = session.query(GameMeeting).filter(GameMeeting.id == buttons.current_meet.data).first()
-                    meet.del_user(current_user.id)
+                    player = session.query(MeetingUser).filter(
+                        MeetingUser.meeting_id == meet.id
+                    ).filter(
+                        MeetingUser.user_id == current_user.id
+                    ).one()
+                    session.delete(player)
                     session.commit()
                 return redirect(url_for('meets'))
 
             if buttons.submit_edit.data:
                 return redirect(url_for('profile'))
 
-        with db.db_session() as session:
+        with webapp.database.db_session() as session:
             query = session.query(GameMeeting).order_by(GameMeeting.meeting_date_time.asc())
             meets_list = paginate(query, page, GAMES_PER_PAGE).all()
-            last_page = ceil(session.query(GameMeeting).count()/GAMES_PER_PAGE)
+            last_page = ceil(session.query(GameMeeting).count() / GAMES_PER_PAGE)
+            current_user_meetings = session.query(GameMeeting).join(GameMeeting.users).filter(
+                MeetingUser.user_id == current_user.id
+            ).all()
         return render_template(
-            'meets.html', meets_list=meets_list, page_title=title, current_page=page,
-            last_page=last_page, buttons=buttons, current_user=current_user)
+            'meets.html',
+            meets_list=meets_list,
+            page_title=title,
+            current_page=page,
+            last_page=last_page,
+            buttons=buttons,
+            current_user=current_user,
+            current_user_meetings=current_user_meetings)
 
     return app

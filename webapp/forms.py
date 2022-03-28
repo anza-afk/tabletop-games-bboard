@@ -1,6 +1,6 @@
 from dataclasses import Field, fields
 import datetime
-from webapp.db import db_session
+from webapp.database import db_session
 from webapp.models import User
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, DateField, TextAreaField, TimeField
@@ -36,37 +36,37 @@ class RegistrationForm(FlaskForm):
         validators=[
             DataRequired(),
             Length(min=5, max=20, message='Имя должно содержать от 5 до 20 символов!')
-            ],
+        ],
         render_kw={"class": "form-control"}
-        )
+    )
     password = PasswordField(
         'Придумайте пароль',
         validators=[
             DataRequired(),
             Length(min=5, max=20, message='Пароль должен содержать содержать от 5 до 20 символов!')
-            ],
+        ],
         render_kw={"class": "form-control"}
-        )
+    )
     confirm_password = PasswordField(
         'Повторите пароль',
         validators=[
             EqualTo('password', message='Пароли не совпадают'),
             DataRequired(),
             Length(min=5, max=20, message='Пароль должен содержать содержать от 5 до 20 символов!')
-            ],
+        ],
         render_kw={"class": "form-control"}
-        )
+    )
     email = StringField(
         'Укажите адрес своей электронной почты',
         validators=[
             Email('Некорректный адрес электронной почты')
-            ],
+        ],
         render_kw={"class": "form-control"}
-        )
+    )
     submit = SubmitField(
         'Зарегистрироваться',
         render_kw={"class": "btn btn-primary"}
-        )
+    )
 
     def validate_username(self, username: fields) -> None:
         """
@@ -95,41 +95,41 @@ class ProfileForm(FlaskForm):
 #            Length(min=2, message='Имя должно содержать от 2 символов!')
 #            ],
         render_kw={"class": "form-control", 'placeholder': 'Имя'}
-        )
+    )
     surname = StringField(
         'Фамилия',
 #        validators=[
 #            Length(min=2, message='Фамилия должна содержать от 2 символов!')
 #            ],
         render_kw={"class": "form-control", 'placeholder': 'Фамилия'}
-        )
+    )
     email = StringField(
         'Сменить адрес электронной почты',
 #        validators=[
 #            Email('Некорректный адрес электронной почты')
 #           ],
         render_kw={"class": "form-control", 'placeholder': 'Email'}
-        )
+    )
     country = StringField(
         'Страна',
         render_kw={"class": "form-control", 'placeholder': 'Страна'}
-        )
+    )
     city = StringField(
         'Город',
         render_kw={"class": "form-control", 'placeholder': 'Город'}
-        )
+    )
     favorite_games = StringField(
         'Любимые игры',
         render_kw={"class": "form-control", 'placeholder': 'Мои любимые игры'}
-        )
+    )
     desired_games = StringField(
         'Хочу поиграть',
         render_kw={"class": "form-control", 'placeholder': 'Хочу поиграть в'}
-        )
+    )
     about_user = StringField(
         'О себе:',
         render_kw={"class": "form-control", 'placeholder': 'Обо мне:'}
-        )
+    )
     submit = SubmitField(
         'Сохранить',
         render_kw={"class": "btn btn-primary"}
@@ -186,7 +186,6 @@ class MeetingForm(FlaskForm):
         """Запрещает выбрать прошедшую дату"""
         if date_meeting.data < datetime.date.today():
             raise ValidationError("Дата не может быть в прошлом!")
-
 
     def validate_time_meeting(self, time_meeting :fields) -> None:
         """Если выбран текущий день, то запрещает выбрать прошедшее время"""
