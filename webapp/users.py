@@ -1,7 +1,6 @@
 from flask import Flask
 from webapp.database import db_session
-from webapp.models import User, UserProfile
-from webapp.models import GameMeeting
+from webapp.models import User, UserProfile,  GameMeeting, MeetingUser
 from flask_wtf import FlaskForm
 import sqlalchemy.exc
 
@@ -81,9 +80,22 @@ def paginate(query, page_number, page_limit):
 
 
 def join_meets(user_id=None, meet_id=None):
+    # with db_session() as session:
+    #     if user_id:
+    #         return session.query(GameMeeting).filter(GameMeeting.owner_id == user_id).all()
+    #     if meet_id:
+    #         return session.query(GameMeeting).filter(GameMeeting.id == meet_id).one()
+    #     return session.query(GameMeeting).all()
+
     with db_session() as session:
-        if user_id:
-            return session.query(GameMeeting).filter(GameMeeting.owner_id == user_id).all()
-        if meet_id:
-            return session.query(GameMeeting).filter(GameMeeting.id == meet_id).one()
-        return session.query(GameMeeting).all()
+        return session.query(GameMeeting).filter(GameMeeting.id == meet_id).one()
+
+
+def owner_meetings(user_id):
+    with db_session() as session:
+        return session.query(GameMeeting).filter(GameMeeting.owner_id == user_id).all()
+
+
+def sub_to_meetings(user_id):
+    with db_session() as session:
+        return session.query(GameMeeting).join(GameMeeting.users).filter(MeetingUser.user_id == user_id).all()

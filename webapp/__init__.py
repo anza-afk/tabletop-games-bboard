@@ -6,7 +6,7 @@ from flask_migrate import Migrate
 from news_parser.test_parser import result_news
 import webapp.database
 from webapp.forms import LoginForm, RegistrationForm, ProfileForm, MeetingForm, ButtonForm
-from webapp.users import add_user, add_profile, join_profile, join_meets, update_profile, update_meeting, add_meeting, paginate
+from webapp.users import add_user, add_profile, join_profile, join_meets, update_profile, update_meeting, add_meeting, paginate, owner_meetings, sub_to_meetings
 from webapp.models import User, UserProfile, GameMeeting, MeetingUser
 from webapp.config import GAMES_PER_PAGE
 from webapp.database import db, db_session
@@ -121,9 +121,9 @@ def create_app():
                 return redirect(url_for('profile'))
 
         profile_data = join_profile(current_user.id)
-        meets_data = join_meets()
-        meets_user = [meet for meet in meets_data if current_user.id in [user.user_id for user in meet.users]]
-    
+        meets_data = owner_meetings(current_user.id)
+        meets_user = sub_to_meetings(current_user.id)
+
         return render_template(
             'profile.html',
             page_title=title,
@@ -215,15 +215,18 @@ def create_app():
             meet_id = buttons.current_meet.data
             meeting_form = MeetingForm()
             meeting_data = join_meets(meet_id=meet_id)
-            print(meeting_form.date_meeting)
-            meeting_form.date_meeting = str(meeting_data.meeting_date_time).split()[0]
-            print(meeting_form.date_meeting)
+            print(meeting_data.description)
+            meet_date = str(meeting_data.meeting_date_time).split()[0]
+            meet_time = str(meeting_data.meeting_date_time).split()[1].split('+')[0]
+
             session['current_meet'] = meeting_data.id
             return render_template(
                 'edit_meeting.html',
                 page_title=title,
                 form=meeting_form,
-                meeting_data=meeting_data
+                meeting_data=meeting_data,
+                meet_time=meet_time,
+                meet_date=meet_date
             )
 
     @app.route('/submit_edit_meet', methods=['POST'])
@@ -233,7 +236,7 @@ def create_app():
         if meeting_form.validate_on_submit:
             update_meeting(meeting_form, session['current_meet'])
             return redirect(url_for('profile'))
-        
+
 
     @app.route('/meets', methods=['POST', 'GET'])
     @app.route('/meets/<int:page>', methods=['POST', 'GET'])
@@ -281,9 +284,7 @@ def create_app():
             query = session.query(GameMeeting).order_by(GameMeeting.meeting_date_time.asc())
             meets_list = paginate(query, page, GAMES_PER_PAGE).all()
             last_page = ceil(session.query(GameMeeting).count() / GAMES_PER_PAGE)
-            current_user_meetings = session.query(GameMeeting).join(GameMeeting.users).filter(
-                MeetingUser.user_id == current_user.id
-            ).all()
+            current_user_meetings = sub_to_meetings(current_user.id)
         return render_template(
             'meets.html',
             meets_list=meets_list,

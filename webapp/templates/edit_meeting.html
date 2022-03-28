@@ -7,13 +7,47 @@
       <div class="col-5">
 
         <form action="{{url_for('submit_edit_meet')}}" method="post" class="py-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h4 class="text-right">Profile Settings</h4>
+            </div>
+            <div class="row mt-2">
+              <div class="col-md-6"><label class="labels">{{ form.game_name.label }}{{ form.game_name(value=meeting_data.number_of_players) }}</div>
+            </div>
+            <div class="row mt-2">
+              <div class="col-md-6"><label class="labels">{{ form.number_of_players.label }}{{ form.number_of_players(value=meeting_data.number_of_players) }}</div>
+            </div>
+           <div class="row mt-3">
+              <div class="col-md-6"><label class="labels">{{ form.meeting_place.label }}{{ form.meeting_place(value=meeting_data.meeting_place) }}</div>
+            </div>
+            <div class="row mt-2">  
+              <div class="col-md-6"><label class="labels">{{ form.date_meeting.label }}{{ form.date_meeting(value=meet_date) }}</div>
+            </div>
+            <div class="row mt-2">
+              <div class="col-md-6"><label class="labels">{{ form.time_meeting.label }}{{ form.time_meeting(value=meet_time) }}</div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-md-12"><label class="labels">{{ form.description.label }}{{ form.description(value=meeting_data.description) }}</div>
+              <script> var textarea = document.getElementById('meet_description'); textarea.innerHTML = "{{ meeting_data.description }}" </script>
+          </div>
+          <div class="mt-5 text-left"> {{ form.submit() }}</div>
+        </form>
+      </div>  
+    </div>
+</section> 
+{% endblock content %}   
+
+<!-- section class="content container bg-light">
+    <div class="row">
+      <div class="col-5">
+
+        <form action="{{url_for('submit_edit_meet')}}" method="post" class="py-3">
             {{ form.hidden_tag() }}
 
-          {% for field in form if field.name not in ['csrf_token', 'submit'] %}
+          {% for field in form if field.name not in ['csrf_token', 'submit', 'description'] %}
             <div class="form-group">
               {{ field.label() }}
               {% if field.name in ['date_meeting', 'time_meeting'] %}
-                {{ field(value=meeting_data.meeting_date_time) }}
+                {{ field.name }}
               {% else %}
                 {{ field(value=meeting_data[field.name]) }}
               {% endif %}
@@ -22,7 +56,7 @@
                     {{ e }}
                   {% endfor %}
                 </p>
-                
+                <div class="col-md-12"><label class="labels">{{ form.description.label }}{{ form.description(value=meeting_data.description) }}</div>
             </div>
             {% endfor %}
 
@@ -32,5 +66,4 @@
       
       </div>  
     </div>
-</section>
-{% endblock content %}   
+</section> -->
