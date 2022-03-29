@@ -3,7 +3,7 @@ import datetime
 from webapp.database import db_session
 from webapp.models import User
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, DateField, TextAreaField, TimeField, DateTimeField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, DateField, TextAreaField, TimeField
 from wtforms.validators import DataRequired, EqualTo, Email, ValidationError, Length, NumberRange
 
 
@@ -174,13 +174,10 @@ class MeetingForm(FlaskForm):
         ],
         render_kw={"class": "form-control"}
     )
-
     description = TextAreaField(
-
-         'Тут можно указать любую дополнительную информацию.',
+        'Тут можно указать любую дополнительную информацию.',
         render_kw={"class": "form-control", 'placeholder': 'Например: играю только с девчонками и на раздевание'},
-        id = 'meet_description'
-
+        id='meet_description'
     )
     submit = SubmitField(
         'Сохранить',
@@ -201,7 +198,6 @@ class MeetingForm(FlaskForm):
 
 class ButtonForm(FlaskForm):
     current_meet = IntegerField()
-
     submit_add_wish = SubmitField(
         'Участвовать',
         render_kw={"class": "btn btn-primary"}
@@ -212,5 +208,9 @@ class ButtonForm(FlaskForm):
     )
     submit_edit = SubmitField(
         'Редактировать встречу',
+        render_kw={"class": "btn btn-primary"}
+    )
+    open_game_info = SubmitField(
+        '?',
         render_kw={"class": "btn btn-primary"}
     )

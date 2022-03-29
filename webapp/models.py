@@ -61,8 +61,10 @@ class GameMeeting(db.Model, UserMixin):
     description = Column(String())
     subscribed_players = Column(JSON)
     confirmed_players = Column(JSON)
+    game_id = Column(Integer, ForeignKey('games.id'), index=True, nullable=True)
     user = relationship('User', backref='game_meetings', foreign_keys=[owner_id], lazy='joined')
     users = relationship('MeetingUser', lazy='joined')
+    game = relationship("Game", lazy='joined')
 
     def meetings_count(self):
         return f'{self.user}\'s {GameMeeting.game_name}'
@@ -72,8 +74,8 @@ class MeetingUser(db.Model):
     __tablename__ = "meeting_users"
 
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey(User.id), index=True, nullable=False)
-    meeting_id = Column(Integer, ForeignKey(GameMeeting.id), index=True, nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id'), index=True, nullable=False)
+    meeting_id = Column(Integer, ForeignKey('game_meetings.id'), index=True, nullable=False)
     confirmed = Column(Boolean, nullable=False)
     user = relationship("User", lazy='joined')
 
