@@ -191,7 +191,9 @@ def create_app():
     def autocomplete():
         with webapp.database.db_session() as session:
             search = request.args.get('q')
-            games_db = session.query(Game).options(load_only("name")).filter(Game.name.ilike('%' + search + '%')).all()
+            if not search:
+                search = []
+            games_db = session.query(Game).options(load_only('name')).filter(Game.name.ilike(f'%{search}%')).limit(15)
             games_names = [game.name for game in games_db]
             return jsonify(games_names)
 
