@@ -215,7 +215,6 @@ def create_app():
             meet_id = buttons.current_meet.data
             meeting_form = MeetingForm()
             meeting_data = join_meets(meet_id=meet_id)
-            print(meeting_data.description)
             meet_date = str(meeting_data.meeting_date_time).split()[0]
             meet_time = str(meeting_data.meeting_date_time).split()[1].split('+')[0]
 
@@ -234,6 +233,8 @@ def create_app():
     def submit_edit_meet():
         meeting_form = MeetingForm()
         if meeting_form.validate_on_submit:
+            print(meeting_form.date_meeting.data)
+            print(meeting_form.time_meeting.data)
             update_meeting(meeting_form, session['current_meet'])
             return redirect(url_for('profile'))
 
