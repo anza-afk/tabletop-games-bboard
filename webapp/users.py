@@ -1,6 +1,6 @@
 from webapp.database import db_session
 from webapp.models import User, UserProfile
-from webapp.models import GameMeeting
+from webapp.models import GameMeeting, MeetingUser
 import sqlalchemy.exc
 
 

@@ -1,4 +1,4 @@
-from dataclasses import Field, fields
+from dataclasses import fields
 import datetime
 from webapp.database import db_session
 from webapp.models import User
@@ -91,23 +91,23 @@ class ProfileForm(FlaskForm):
 
     name = StringField(
         'Имя',
-#        validators=[
-#            Length(min=2, message='Имя должно содержать от 2 символов!')
-#            ],
+        validators=[
+            Length(min=2, message='Имя должно содержать от 2 символов!')
+        ],
         render_kw={"class": "form-control", 'placeholder': 'Имя'}
     )
     surname = StringField(
         'Фамилия',
-#        validators=[
-#            Length(min=2, message='Фамилия должна содержать от 2 символов!')
-#            ],
+        validators=[
+            Length(min=2, message='Фамилия должна содержать от 2 символов!')
+        ],
         render_kw={"class": "form-control", 'placeholder': 'Фамилия'}
     )
     email = StringField(
         'Сменить адрес электронной почты',
-#        validators=[
-#            Email('Некорректный адрес электронной почты')
-#           ],
+        validators=[
+            Email('Некорректный адрес электронной почты')
+        ],
         render_kw={"class": "form-control", 'placeholder': 'Email'}
     )
     country = StringField(
@@ -142,10 +142,11 @@ class MeetingForm(FlaskForm):
         validators=[
             DataRequired(),
         ],
-        render_kw={"class": "form-control"}
+        render_kw={"class": "form-control"},
+        id='game_autocomplete'
     )
     number_of_players = IntegerField(
-         'Укажите количество игроков, которых Вы хотите найти.',
+        'Укажите количество игроков, которых Вы хотите найти.',
         validators=[
             DataRequired(),
             NumberRange(min=1, max=50, message="Нужно указать значение от 1 до 50")
@@ -153,28 +154,28 @@ class MeetingForm(FlaskForm):
         render_kw={"class": "form-control", 'placeholder': 'От 1 до 50 игроков'}
     )
     meeting_place = StringField(
-         'Укажите место встречи.',
+        'Укажите место встречи.',
         validators=[
             DataRequired(),
         ],
         render_kw={"class": "form-control", 'placeholder': 'г. Москва, Парк Останкино, 2-я лавочка от входа'}
     )
     date_meeting = DateField(
-         'Выберите дату встречи.',
+        'Выберите дату встречи.',
         validators=[
             DataRequired(),
         ],
         render_kw={"class": "form-control"}
     )
     time_meeting = TimeField(
-         'Выберите время встречи.',
+        'Выберите время встречи.',
         validators=[
             DataRequired(),
         ],
         render_kw={"class": "form-control"}
     )
     description = TextAreaField(
-         'Тут можно указать любую дополнительную информацию.',
+        'Тут можно указать любую дополнительную информацию.',
         render_kw={"class": "form-control", 'placeholder': 'Например: играю только с девчонками и на раздевание'}
     )
     submit = SubmitField(
