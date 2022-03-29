@@ -1,4 +1,3 @@
-import json
 from sqlalchemy import Column, Integer, String, JSON, ForeignKey, Date, DateTime, Boolean
 from sqlalchemy.orm import relationship
 from webapp.database import Base, engine, db
@@ -76,7 +75,6 @@ class MeetingUser(db.Model):
     user_id = Column(Integer, ForeignKey(User.id), index=True, nullable=False)
     meeting_id = Column(Integer, ForeignKey(GameMeeting.id), index=True, nullable=False)
     confirmed = Column(Boolean, nullable=False)
-    meeting = relationship('GameMeeting', lazy='joined')
     user = relationship("User", lazy='joined')
 
 

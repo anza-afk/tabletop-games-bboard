@@ -1,16 +1,17 @@
 from datetime import date
 from werkzeug.security import generate_password_hash
-from flask import Flask, redirect, render_template, flash, url_for, session
+from flask import Flask, redirect, render_template, flash, url_for, session, request, jsonify
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from flask_migrate import Migrate
 from news_parser.test_parser import result_news
 import webapp.database
 from webapp.forms import LoginForm, RegistrationForm, ProfileForm, MeetingForm, ButtonForm
 from webapp.users import add_user, add_profile, join_profile, join_meets, update_profile, update_meeting, add_meeting, paginate, owner_meetings, sub_to_meetings
-from webapp.models import User, UserProfile, GameMeeting, MeetingUser
+from webapp.models import User, UserProfile, GameMeeting, MeetingUser, Game
 from webapp.config import GAMES_PER_PAGE
 from webapp.database import db, db_session
 from math import ceil
+from sqlalchemy.orm import load_only
 
 migrate = Migrate()
 
@@ -179,7 +180,7 @@ def create_app():
         новую встречу в БД.
         """
         title = 'Создание встречи'
-        meeting_form = MeetingForm()
+        meeting_form = MeetingForm(request.form)
 
         if meeting_form.validate_on_submit():
             new_meeting = GameMeeting(
@@ -203,8 +204,9 @@ def create_app():
         return render_template(
             'create_meeting.html',
             page_title=title,
-            form=meeting_form
+            form=meeting_form,
         )
+
 
     @app.route('/edit_meet', methods=['GET', 'POST'])
     @login_required
@@ -237,6 +239,17 @@ def create_app():
             print(meeting_form.time_meeting.data)
             update_meeting(meeting_form, session['current_meet'])
             return redirect(url_for('profile'))
+
+
+    @app.route('/_autocomplete', methods=['GET'])
+    def autocomplete():
+        with webapp.database.db_session() as session:
+            search = request.args.get('q')
+            if not search:
+                search = []
+            games_db = session.query(Game).options(load_only('name')).filter(Game.name.ilike(f'%{search}%')).limit(15)
+            games_names = [game.name for game in games_db]
+            return jsonify(games_names)
 
 
     @app.route('/meets', methods=['POST', 'GET'])
