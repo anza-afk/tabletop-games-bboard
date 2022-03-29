@@ -64,23 +64,6 @@ class GameMeeting(db.Model, UserMixin):
     user = relationship('User', backref='game_meetings', foreign_keys=[owner_id], lazy='joined')
     users = relationship('MeetingUser', lazy='joined')
 
-    def add_user(self, user_id: int) -> None:
-        """
-        Добавляет пользователя в список желающих принять участие.
-        """
-        if user_id not in self.subscribed_players:
-            self.subscribed_players = self.subscribed_players + [user_id]
-
-    def del_user(self, user_id: int, owner_id=None) -> None:
-        """
-        Удаляет пользователя из списка желающих или списка
-        подтвержденных участников.
-        """
-        if user_id in self.subscribed_players:
-            self.subscribed_players = list(set(self.subscribed_players) - {user_id})
-        elif (user_id in self.confirmed_players) or (owner_id and owner_id == self.owner_id):
-            self.confirmed_players = list(set(self.confirmed_players) - {user_id})
-
     def meetings_count(self):
         return f'{self.user}\'s {GameMeeting.game_name}'
 

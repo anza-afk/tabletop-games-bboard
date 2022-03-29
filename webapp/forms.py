@@ -3,7 +3,7 @@ import datetime
 from webapp.database import db_session
 from webapp.models import User
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, DateField, TextAreaField, TimeField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, DateField, TextAreaField, TimeField, DateTimeField
 from wtforms.validators import DataRequired, EqualTo, Email, ValidationError, Length, NumberRange
 
 
@@ -174,9 +174,13 @@ class MeetingForm(FlaskForm):
         ],
         render_kw={"class": "form-control"}
     )
+
     description = TextAreaField(
-        'Тут можно указать любую дополнительную информацию.',
-        render_kw={"class": "form-control", 'placeholder': 'Например: играю только с девчонками и на раздевание'}
+
+         'Тут можно указать любую дополнительную информацию.',
+        render_kw={"class": "form-control", 'placeholder': 'Например: играю только с девчонками и на раздевание'},
+        id = 'meet_description'
+
     )
     submit = SubmitField(
         'Сохранить',
@@ -207,6 +211,6 @@ class ButtonForm(FlaskForm):
         render_kw={"class": "btn btn-primary"}
     )
     submit_edit = SubmitField(
-        'Редактировать встречу в профиле',
+        'Редактировать встречу',
         render_kw={"class": "btn btn-primary"}
     )
