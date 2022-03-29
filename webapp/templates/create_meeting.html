@@ -11,21 +11,23 @@
             <div class="form-group">
 
               {{ form.game_name.label() }}:{{ form.game_name() }}
-
               <script>
                 $(function() {
-                  jQuery.ajax({
-                        url: '{{ url_for("autocomplete") }}'
-                        }).done(function (games_names){
-                            $('#game_autocomplete').autocomplete({
-                              source: games_names,
-                              minLength: 3,
-                              selectFirst: true
-                            });
-                        });
-                    });
+                  $("#game_autocomplete").autocomplete({
+                    source:function(request, response) {
+                      $.getJSON("{{url_for('autocomplete')}}",{
+                        q: request.term,
+                      }, function(data) {
+                        response(data);
+                      }); 
+                    },
+                    minLength: 2,
+                    select: function(event, ui) {
+                      console.log(ui.item.value);
+                    }
+                  });
+                })
               </script>
-            
           {% for field in form if field.name not in ['csrf_token', 'submit', 'game_name'] %}
             <div class="form-group">
               {{ field.label() }}

@@ -1,6 +1,6 @@
 from datetime import date
 from werkzeug.security import generate_password_hash
-from flask import Flask, redirect, render_template, flash, request, url_for, Response
+from flask import Flask, redirect, render_template, flash, request, url_for, jsonify
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from flask_migrate import Migrate
 from news_parser.test_parser import result_news
@@ -12,7 +12,6 @@ from webapp.config import GAMES_PER_PAGE
 from webapp.database import db
 from math import ceil
 from sqlalchemy.orm import load_only
-import json
 
 migrate = Migrate()
 
@@ -191,9 +190,10 @@ def create_app():
     @app.route('/_autocomplete', methods=['GET'])
     def autocomplete():
         with webapp.database.db_session() as session:
-            games_db = session.query(Game).options(load_only("name")).all()
+            search = request.args.get('q')
+            games_db = session.query(Game).options(load_only("name")).filter(Game.name.ilike('%' + search + '%')).all()
             games_names = [game.name for game in games_db]
-        return Response(json.dumps(games_names), mimetype='application/json')
+            return jsonify(games_names)
 
     @app.route('/meets', methods=['POST', 'GET'])
     @app.route('/meets/<int:page>', methods=['POST', 'GET'])
