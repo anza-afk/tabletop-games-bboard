@@ -227,7 +227,7 @@ def create_app():
                 form=meeting_form,
                 meeting_data=meeting_data,
                 meet_time=meet_time,
-                meet_date=meet_date
+                meet_date=meet_date,
             )
 
     @app.route('/submit_edit_meet', methods=['POST'])

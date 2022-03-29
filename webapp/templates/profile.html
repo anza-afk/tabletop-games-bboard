@@ -56,12 +56,36 @@
                                         <div class="col-md-6"><label class="labels">Подтверждено: ?</div>
                                     </div>
                                     <div class="row mt-3">
-                                        <div class="col-md-12"><label class="labels">Встреча состоится в: {{ meet.meeting_date_time }}</div>
-                                        <div class="col-md-12"><label class="labels">Инфо: {{ meet.description }}</div>
+                                        <div class="col-md-4 border-right">
+                                            <div class="col-md-12"><label class="labels">Инфо:</div>
+                                            <div class="col-md-12"><label class="labels">Ищу всего: {{ meet.number_of_players }}</div>
+                                            <div class="col-md-12"><label class="labels">Встреча состоится в: {{ meet.meeting_date_time }}</div>
+                                            <div class="col-md-12"><label class="labels">Инфо: {{ meet.description }}</div>
+                                            <div class="col-md-12"><small>Опубликовано: {{ meet.create_date }}</small></div>
+                                        </div>
+                                        <div class="col-md-4 border-right">
+                                            <div class="col-md-6"><label class="labels">Желающие: </div>
+                                                {% for user in meet.users %}
+                                                    {% if not user.confirmed %}
+                                                    <div>
+                                                        {{user.user.username}}
+                                                    </div>
+                                                    {% endif %}
+                                                {% endfor %}
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="col-md-6"><label class="labels">Участники: </div>
+                                                {% for user in meet.users %}
+                                                    {% if user.confirmed %}
+                                                    <div>
+                                                        {{user.user.username}}
+                                                    </div>
+                                                    {% endif %}
+                                                {% endfor %}
+                                        </div>
+
                                     </div>
-                                    <div class="row mt-2">
-                                        <div class="col-md-12"><small>Опубликовано: {{ meet.create_date }}</small></div>
-                                    </div>                                   
+                                 
                                 </div>
                                 <div class="modal-footer">
                                     <form action="{{url_for('edit_meet')}}" method="post" class="">
