@@ -71,8 +71,8 @@ class GameMeeting(db.Model, UserMixin):
         return f'{self.user}\'s {GameMeeting.game_name}'
 
     @classmethod
-    def active_games(self, session):
-        return session.query(GameMeeting).filter(GameMeeting.meeting_date_time > datetime.now())
+    def active_games(cls, session):
+        return session.query(cls).filter(cls.meeting_date_time > datetime.now())
 
 
 class MeetingUser(db.Model):
