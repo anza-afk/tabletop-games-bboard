@@ -80,17 +80,18 @@ def paginate(query, page_number, page_limit):
 
 def join_meets(meet_id):
     with db_session() as session:
-        return session.query(GameMeeting).filter(GameMeeting.id == meet_id).one()
+        return GameMeeting.active_games(session).filter(GameMeeting.id == meet_id).one()
 
 
 def owner_meetings(user_id):
     with db_session() as session:
-        return session.query(GameMeeting).filter(GameMeeting.owner_id == user_id).all()
+        return GameMeeting.active_games(session).filter(GameMeeting.owner_id == user_id)
 
 
 def sub_to_meetings(user_id):
     with db_session() as session:
-        return session.query(GameMeeting).join(GameMeeting.users).filter(MeetingUser.user_id == user_id).all()
+        return GameMeeting.active_games(session).join(GameMeeting.users).filter(MeetingUser.user_id == user_id)
+
 
 def game_full_info(game_id):
     with db_session() as session:

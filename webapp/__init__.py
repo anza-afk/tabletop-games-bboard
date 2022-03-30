@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from werkzeug.security import generate_password_hash
 from flask import Flask, redirect, render_template, flash, url_for, session, request, jsonify
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
@@ -121,8 +121,8 @@ def create_app():
                 return redirect(url_for('profile'))
 
         profile_data = join_profile(current_user.id)
-        meets_data = owner_meetings(current_user.id)
-        meets_user = sub_to_meetings(current_user.id)
+        meets_data = owner_meetings(current_user.id).order_by(GameMeeting.meeting_date_time.asc())
+        meets_user = sub_to_meetings(current_user.id).order_by(GameMeeting.meeting_date_time.asc())
 
         return render_template(
             'profile.html',
@@ -180,6 +180,14 @@ def create_app():
         """
         title = 'Создание встречи'
         meeting_form = MeetingForm(request.form)
+        meet_data = owner_meetings(current_user.id)
+        if meet_data.count() >= 10:
+            flash('Ошибка создания встречи, Вы создали слишком много встреч.')
+            return render_template(
+                'create_meeting.html',
+                page_title=title,
+                form=meeting_form,
+            )
 
         if meeting_form.validate_on_submit():
             with db_session() as session:
@@ -302,9 +310,10 @@ def create_app():
             return redirect(url_for('meetings'))
 
         with db_session() as session:
-            query = session.query(GameMeeting).order_by(GameMeeting.meeting_date_time.asc())
+            active_games = GameMeeting.active_games(session)
+            query = active_games.order_by(GameMeeting.meeting_date_time.asc())
             meets_list = paginate(query, page, GAMES_PER_PAGE).all()
-            last_page = ceil(session.query(GameMeeting).count() / GAMES_PER_PAGE)
+            last_page = ceil(active_games.count() / GAMES_PER_PAGE)
             current_user_meetings = sub_to_meetings(current_user.id)
         return render_template(
             'meetings.html',

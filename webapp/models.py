@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 from webapp.database import Base, engine, db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+from datetime import datetime
 
 
 class User(db.Model, UserMixin):
@@ -66,8 +67,12 @@ class GameMeeting(db.Model, UserMixin):
     users = relationship('MeetingUser', lazy='joined')
     game = relationship("Game", lazy='joined')
 
-    def meetings_count(self):
+    def repr(self):
         return f'{self.user}\'s {GameMeeting.game_name}'
+
+    @classmethod
+    def active_games(self, session):
+        return session.query(GameMeeting).filter(GameMeeting.meeting_date_time > datetime.now())
 
 
 class MeetingUser(db.Model):
