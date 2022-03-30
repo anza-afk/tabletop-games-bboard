@@ -184,10 +184,7 @@ def create_app():
         if meeting_form.validate_on_submit():
             with db_session() as session:
                 db_game = session.query(Game).filter(Game.name == meeting_form['game_name'].data).first()
-                if db_game:
-                    game_id = db_game.id
-                else:
-                    game_id = None
+                game_id = db_game.id if db_game else None
             new_meeting = GameMeeting(
                 game_name=meeting_form['game_name'].data,
                 owner_id=current_user.id,
@@ -262,12 +259,12 @@ def create_app():
             return jsonify(session.query(Game).filter(Game.name.ilike(f'%{search}%')).first())
 
     @app.route('/meetings', methods=['POST', 'GET'])
-    @app.route('/meetings/<int:page>', methods=['POST', 'GET'])
     @login_required
     def meetings(page=1):
         title = 'LFG'
         buttons = ButtonForm()
-
+        if request.args.get('p'):
+            page = int(request.args.get('p'))
         if buttons.validate_on_submit():
             if buttons.submit_add_wish.data:
                 with db_session() as session:
