@@ -260,11 +260,10 @@ def create_app():
 
     @app.route('/meetings', methods=['POST', 'GET'])
     @login_required
-    def meetings(page=1):
+    def meetings():
         title = 'LFG'
         buttons = ButtonForm()
-        if request.args.get('p'):
-            page = int(request.args.get('p'))
+        page = int(request.args.get('p', 1))
         if buttons.validate_on_submit():
             if buttons.submit_add_wish.data:
                 with db_session() as session:
