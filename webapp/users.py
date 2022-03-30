@@ -49,7 +49,6 @@ def update_meeting(form: FlaskForm, meeting_id: int) -> None:
         meet.meeting_place = form['meeting_place'].data
         meet.meeting_date_time = f"{form['date_meeting'].data} {form['time_meeting'].data}"
         meet.description = form['description'].data
-        print(meet)
         session.commit()
 
 
@@ -79,14 +78,7 @@ def paginate(query, page_number, page_limit):
     return query
 
 
-def join_meets(user_id=None, meet_id=None):
-    # with db_session() as session:
-    #     if user_id:
-    #         return session.query(GameMeeting).filter(GameMeeting.owner_id == user_id).all()
-    #     if meet_id:
-    #         return session.query(GameMeeting).filter(GameMeeting.id == meet_id).one()
-    #     return session.query(GameMeeting).all()
-
+def join_meets(meet_id):
     with db_session() as session:
         return session.query(GameMeeting).filter(GameMeeting.id == meet_id).one()
 
@@ -99,7 +91,6 @@ def owner_meetings(user_id):
 def sub_to_meetings(user_id):
     with db_session() as session:
         return session.query(GameMeeting).join(GameMeeting.users).filter(MeetingUser.user_id == user_id).all()
-
 
 def game_full_info(game_id):
     with db_session() as session:
