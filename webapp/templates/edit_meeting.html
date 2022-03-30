@@ -11,22 +11,22 @@
               <h4 class="text-right">{{ meeting_data.game_name }}</h4>
             </div>
             <div class="row mt-2">
-              <div class="col-md-6"><label class="labels">{{ form.game_name.label }}{{ form.game_name(value=meeting_data.game_name) }}</div>
+              <div class="col"><label class="labels">{{ form.game_name.label }}{{ form.game_name(value=meeting_data.game_name) }}</div>
             </div>
             <div class="row mt-2">
-              <div class="col-md-6"><label class="labels">{{ form.number_of_players.label }}{{ form.number_of_players(value=meeting_data.number_of_players) }}</div>
+              <div class="col"><label class="labels">{{ form.number_of_players.label }}{{ form.number_of_players(value=meeting_data.number_of_players) }}</div>
             </div>
            <div class="row mt-3">
-              <div class="col-md-6"><label class="labels">{{ form.meeting_place.label }}{{ form.meeting_place(value=meeting_data.meeting_place) }}</div>
+              <div class="col"><label class="labels">{{ form.meeting_place.label }}{{ form.meeting_place(value=meeting_data.meeting_place) }}</div>
             </div>
             <div class="row mt-2">  
-              <div class="col-md-6"><label class="labels">{{ form.date_meeting.label }}{{ form.date_meeting(value=meet_date) }}</div>
+              <div class="col"><label class="labels">{{ form.date_meeting.label }}{{ form.date_meeting(value=meet_date) }}</div>
             </div>
             <div class="row mt-2">
-              <div class="col-md-6"><label class="labels">{{ form.time_meeting.label }}{{ form.time_meeting(value=meet_time) }}</div>
+              <div class="col"><label class="labels">{{ form.time_meeting.label }}{{ form.time_meeting(value=meet_time) }}</div>
             </div>
             <div class="row mt-3">
-              <div class="col-md-12"><label class="labels">{{ form.description.label }}{{ form.description(value=meeting_data.description) }}</div>
+              <div class="col"><label class="labels">{{ form.description.label }}{{ form.description(value=meeting_data.description) }}</div>
               <script> var textarea = document.getElementById('meet_description'); textarea.innerHTML = "{{ meeting_data.description }}" </script>
           </div>
           <div class="mt-5 text-left"> {{ form.submit() }}</div>
@@ -34,14 +34,15 @@
       </div> 
 
       <div class="col-md-4 mt-3 border-right">
-        <h6 class="text-left mb-3">Список подписанных</h4>
+        <h4 class="text-left mb-3">Список подписанных</h4>
         {% for user in meeting_data.users %}
           {% if not user.confirmed %}
-                <a href="#" data-toggle="modal" data-target="#ProfileModal{{user.user.username}}" class="link-primary"><h6 class="card-subtitle mb-2 text-primary">{{ user.user.username }}</h6></a>
+                <a href="#" data-toggle="modal" data-target="#ProfileModal{{user.user.username}}" class="link-primary"><h6 class="card-subtitle mb-2 text-primary">
+                  {{ user.user.username }}</h6></a>
                 <!-- Modal -->
                 <div class="modal fade" id="ProfileModal{{user.user.username}}" tabindex="-1" role="dialog" aria-labelledby="ProfileModalLabel" aria-hidden="true">
                   <div class="modal-dialog" role="document">
-                    <div class="modal-content">
+                      <div class="modal-content">
                         <div class="modal-header">
                           <h5 class="modal-title" id="ProfileModalLabel">Профиль {{ user.user.user_profile.name }}</h5>
                           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -49,24 +50,26 @@
                           </button>
                         </div>
                         <div class="modal-body">
-                          <div class="row mt-2"></div>
-                            <div class="col-md-6"><label class="labels">{{ user.user.user_profile.name }}</div>
-                            <div class="col-md-6"><label class="labels">{{ user.user.user_profile.surname }}</div>
+                            <div class="row mt-2">
+                              <div class="col-md-6"><label class="labels">{{ user.user.user_profile.name }}</div>
+                              <div class="col-md-6"><label class="labels">{{ user.user.user_profile.surname }}</div>
+                            </div>
+                            <div class="row mt-3">
+                              <div class="col-md-6"><label class="labels">{{ user.user.user_profile.country }}</div>
+                              <div class="col-md-6"><label class="labels">{{ user.user.user_profile.city }}</div>
+                            </div>
+                            <div class="row mt-3">
+                              <div class="col-md-12"><label class="labels">{{ user.user.email }}</div>
+                              <div class="col-md-12"><label class="labels">{{ user.user.user_profile.favorite_games }}</div>
+                              <div class="col-md-12"><label class="labels">{{ user.user.user_profile.desired_games }}</div>
+                              <div class="col-md-12"><label class="labels">{{ user.user.user_profile.about_user }}</div>
+                            </div>
                         </div>
-                        <div class="row mt-3">
-                            <div class="col-md-6"><label class="labels">{{ user.user.user_profile.country }}</div>
-                            <div class="col-md-6"><label class="labels">{{ user.user.user_profile.city }}</div>
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col-md-12"><label class="labels">{{ user.user.email }}</div>
-                            <div class="col-md-12"><label class="labels">{{ user.user.user_profile.favorite_games }}</div>
-                            <div class="col-md-12"><label class="labels">{{ user.user.user_profile.desired_games }}</div>
-                            <div class="col-md-12"><label class="labels">{{ user.user.user_profile.about_user }}</div>
-                        </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                          </div>
                       </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                      </div>
+                      
                   </div>
                 </div>
                 
@@ -77,7 +80,7 @@
       </div>
 
       <div class="col-md-4 mt-3 border-right">
-        <h6 class="text-left mb-3">Список подтвержденных</h4>
+        <h4 class="text-left mb-3">Список подтвержденных</h4>
         {% for user in meeting_data.users %}
           {% if user.confirmed %}
                 <a href="#" data-toggle="modal" data-target="#ProfileModal{{user.user.username}}" class="link-primary"><h6 class="card-subtitle mb-2 text-primary">{{ user.user.username }}</h6></a>
@@ -108,7 +111,7 @@
                         </div>
                       </div>
                       <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
                       </div>
                   </div>
                 </div>
