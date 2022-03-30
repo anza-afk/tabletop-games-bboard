@@ -5,8 +5,8 @@ from flask_login import LoginManager, current_user, login_user, logout_user, log
 from flask_migrate import Migrate
 from news_parser.test_parser import result_news
 from webapp.forms import LoginForm, RegistrationForm, ProfileForm, MeetingForm, ButtonForm
-from webapp.methods import add_user, add_profile, join_profile, join_meets, update_profile, update_meeting, add_meeting, paginate, owner_meetings, sub_to_meetings, game_full_info
-from webapp.models import Game, User, UserProfile, GameMeeting, MeetingUser, Game
+from webapp.users import add_user, add_profile, join_profile, join_meets, update_profile, update_meeting, add_meeting, paginate, owner_meetings, sub_to_meetings
+from webapp.models import Game, User, UserProfile, GameMeeting, MeetingUser
 from webapp.config import GAMES_PER_PAGE
 from webapp.database import db, db_session
 from math import ceil
