@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, JSON, ForeignKey, Date, DateTime, Boolean
 from sqlalchemy.orm import relationship
-from webapp.database import Base, engine, db
+from webapp.database import Base, engine, db, db_session
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
@@ -78,6 +78,16 @@ class MeetingUser(db.Model):
     meeting_id = Column(Integer, ForeignKey('game_meetings.id'), index=True, nullable=False)
     confirmed = Column(Boolean, nullable=False)
     user = relationship("User", lazy='joined')
+
+    def get_meet(meeting_id, session):
+        return session.query(MeetingUser).filter(MeetingUser.id == meeting_id).one()
+
+    def confirm_user(self):
+        self.confirmed = True
+
+    def un_confirm_user(self):
+        self.confirmed = False
+
 
 
 class Game(db.Model):

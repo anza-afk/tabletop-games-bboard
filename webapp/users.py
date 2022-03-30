@@ -92,6 +92,12 @@ def sub_to_meetings(user_id):
     with db_session() as session:
         return session.query(GameMeeting).join(GameMeeting.users).filter(MeetingUser.user_id == user_id).all()
 
+
 def game_full_info(game_id):
     with db_session() as session:
         return session.query(Game).filter(Game.id == game_id).first()
+
+
+# def get_meet(meeting_id):
+#     with db_session() as session:
+#         return session.query(MeetingUser).filter(MeetingUser.id == meeting_id).one()
