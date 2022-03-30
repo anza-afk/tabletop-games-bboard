@@ -8,8 +8,43 @@
     {% for meet in meets_list %}
     <div class="card ">    
         <div class="card-body col-8">
-          <h5 class="card-title">{{ meet.game_name }}</h5>
-          <a href="#" data-toggle="modal" data-target="#ProfileModal{{meet.user.id}}" class="link-primary"><h6 class="card-subtitle mb-2 text-primary">by: {{ meet.user.username }}</h6></a>
+          <div class="row mt-3 ml-1">
+            <h5 class="card-title">{{ meet.game_name }}</h5>
+            <a href="#" data-toggle="modal" data-target="#GameModal{{meet.user.id}}" class="link-primary ml-1"><h6 class="card-subtitle mb-2 text-primary">?</h6></a>
+          </div>
+          <!-- Modal -->
+          <div class="modal fade" id="GameModal{{meet.user.id}}" tabindex="-1" role="dialog" aria-labelledby="GameModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="GameModalLabel">{{ meet.game.name }}</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div class="row mt-1">
+                    <div class="col-md-12"><label class="labels">Количество игроков: {{ meet.game.number_of_players }}</div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col-md-6"><label class="labels">Возраст: {{ meet.game.age }}</div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-12"><label class="labels">{{ meet.game.description }}</div>
+                </div>
+                <div class="row mt-3">
+                  <img src="{{ meet.game.image }}" alt="" class="img-thumbnail">
+                </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row ml-1">
+            <a href="#" data-toggle="modal" data-target="#ProfileModal{{meet.user.id}}" class="link-primary"><h6 class="card-subtitle mb-2 text-primary">by: {{ meet.user.username }}</h6></a>
+          </div>
             <!-- Modal -->
             <div class="modal fade" id="ProfileModal{{meet.user.id}}" tabindex="-1" role="dialog" aria-labelledby="ProfileModalLabel" aria-hidden="true">
               <div class="modal-dialog" role="document">
@@ -75,26 +110,26 @@
     <nav aria-label="Page navigation example">
       <ul class="pagination">
         {% if current_page != 1 and current_page-1 !=1 and current_page-2 !=1 %}
-        <li class="page-item"><a class="page-link" href="/meets/1">1</a></li>
+        <li class="page-item"><a class="page-link" href="/meetings?p=1">1</a></li>
         {% endif %}
         {% if current_page-1 > 1 %}
-        <li class="page-item"><a class="page-link" href="/meets/{{ current_page-2 }}">{{ current_page-2 }}</a></li>
+        <li class="page-item"><a class="page-link" href="/meetings?p={{ current_page-2 }}">{{ current_page-2 }}</a></li>
         {% endif %}
         
         {% if current_page > 1 %}
-        <li class="page-item"><a class="page-link" href="/meets/{{ current_page-1 }}">{{ current_page-1 }}</a></li>
+        <li class="page-item"><a class="page-link" href="/meetings?p={{ current_page-1 }}">{{ current_page-1 }}</a></li>
         {% endif %}
         
         <li class="page-item"><a class="page-link bg-primary text-white" href="#">{{ current_page }}</a></li>
         
         {% if current_page+1 < last_page %}
-        <li class="page-item"><a class="page-link" href="/meets/{{ current_page+1 }}">{{ current_page+1 }}</a></li>
+        <li class="page-item"><a class="page-link" href="/meetings?p={{ current_page+1 }}">{{ current_page+1 }}</a></li>
         {% endif %}
         {% if current_page+2 < last_page %}
-        <li class="page-item"><a class="page-link" href="/meets/{{ current_page+2 }}">{{ current_page+2 }}</a></li>
+        <li class="page-item"><a class="page-link" href="/meetings?p={{ current_page+2 }}">{{ current_page+2 }}</a></li>
         {% endif %}
         {% if current_page != last_page %}
-        <li class="page-item"><a class="page-link" href="/meets/{{ last_page }}">{{ last_page }}</a></li>
+        <li class="page-item"><a class="page-link" href="/meetings?p={{ last_page }}">{{ last_page }}</a></li>
         {% endif %}
       </ul>
     </nav>

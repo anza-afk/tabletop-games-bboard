@@ -13,6 +13,23 @@
             <div class="row mt-2">
               <div class="col"><label class="labels">{{ form.game_name.label }}{{ form.game_name(value=meeting_data.game_name) }}</div>
             </div>
+            <script>
+              $(function() {
+                $("#game_autocomplete").autocomplete({
+                  source:function(request, response) {
+                    $.getJSON("{{url_for('autocomplete')}}",{
+                      q: request.term,
+                    }, function(data) {
+                      response(data);
+                    }); 
+                  },
+                  minLength: 2,
+                  select: function(event, ui) {
+                    console.log(ui.item.value);
+                  }
+                });
+              })
+            </script>
             <div class="row mt-2">
               <div class="col"><label class="labels">{{ form.number_of_players.label }}{{ form.number_of_players(value=meeting_data.number_of_players) }}</div>
             </div>

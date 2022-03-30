@@ -1,6 +1,6 @@
 from flask import Flask
 from webapp.database import db_session
-from webapp.models import User, UserProfile,  GameMeeting, MeetingUser
+from webapp.models import Game, User, UserProfile,  GameMeeting, MeetingUser
 from flask_wtf import FlaskForm
 import sqlalchemy.exc
 
@@ -92,3 +92,6 @@ def sub_to_meetings(user_id):
     with db_session() as session:
         return session.query(GameMeeting).join(GameMeeting.users).filter(MeetingUser.user_id == user_id).all()
 
+def game_full_info(game_id):
+    with db_session() as session:
+        return session.query(Game).filter(Game.id == game_id).first()
