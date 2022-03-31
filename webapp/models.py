@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 from webapp.database import Base, engine, db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+from datetime import datetime
 
 
 class User(db.Model, UserMixin):
@@ -64,10 +65,14 @@ class GameMeeting(db.Model, UserMixin):
     game_id = Column(Integer, ForeignKey('games.id'), index=True, nullable=True)
     user = relationship('User', backref='game_meetings', foreign_keys=[owner_id], lazy='joined')
     users = relationship('MeetingUser', lazy='joined')
-    game = relationship("Game", lazy='joined')
+    game = relationship("Game", lazy='subquery')
 
-    def meetings_count(self):
+    def repr(self):
         return f'{self.user}\'s {GameMeeting.game_name}'
+
+    @classmethod
+    def active_games(cls, session):
+        return session.query(cls).filter(cls.meeting_date_time > datetime.now())
 
 
 class MeetingUser(db.Model):
@@ -77,7 +82,7 @@ class MeetingUser(db.Model):
     user_id = Column(Integer, ForeignKey('users.id'), index=True, nullable=False)
     meeting_id = Column(Integer, ForeignKey('game_meetings.id'), index=True, nullable=False)
     confirmed = Column(Boolean, nullable=False)
-    user = relationship("User", lazy='joined')
+    user = relationship("User", lazy='subquery')
 
 
 class Game(db.Model):

@@ -2,7 +2,6 @@
 
 {% block content %}
 
-
 <section class="content container bg-light">
   <div class="col-8">
     {% for meet in meets_list %}
@@ -10,10 +9,10 @@
         <div class="card-body col-8">
           <div class="row mt-3 ml-1">
             <h5 class="card-title">{{ meet.game_name }}</h5>
-            <a href="#" data-toggle="modal" data-target="#GameModal{{meet.user.id}}" class="link-primary ml-1"><h6 class="card-subtitle mb-2 text-primary">?</h6></a>
+            <a href="#" data-toggle="modal" data-target="#GameModal{{meet.id}}" class="link-primary ml-1"><h6 class="card-subtitle mb-2 text-primary">?</h6></a>
           </div>
           <!-- Modal -->
-          <div class="modal fade" id="GameModal{{meet.user.id}}" tabindex="-1" role="dialog" aria-labelledby="GameModalLabel" aria-hidden="true">
+          <div class="modal fade" id="GameModal{{meet.id}}" tabindex="-1" role="dialog" aria-labelledby="GameModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
               <div class="modal-content">
                 <div class="modal-header">
