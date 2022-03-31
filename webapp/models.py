@@ -79,7 +79,7 @@ class MeetingUser(db.Model):
     confirmed = Column(Boolean, nullable=False)
     user = relationship("User", lazy='joined')
 
-    def get_meet(meeting_id, session):
+    def get_meet(session, meeting_id):
         return session.query(MeetingUser).filter(MeetingUser.id == meeting_id).one()
 
     def confirm_user(self):

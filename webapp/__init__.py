@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from sqlalchemy import update
 from werkzeug.security import generate_password_hash
 from flask import Flask, redirect, render_template, flash, url_for, session, request, jsonify
@@ -110,12 +110,11 @@ def create_app():
 
         if buttons.validate_on_submit():
             with db_session() as session:
-                meet = session.query(GameMeeting).filter(GameMeeting.id == buttons.current_meet.data).first()
-                player = session.query(MeetingUser).filter(
-                    MeetingUser.meeting_id == meet.id
+                player = session.query(MeetingUser).join(GameMeeting).filter(
+                    GameMeeting.id == buttons.current_meet.data
                 ).filter(
-                    MeetingUser.user_id == current_user.id
-                ).one()
+                    MeetingUser.meeting_id == GameMeeting.id
+                ).filter(MeetingUser.user_id == current_user.id).one()
                 session.delete(player)
                 session.commit()
             return redirect(url_for('profile'))
@@ -180,7 +179,6 @@ def create_app():
         """
         title = 'Создание встречи'
         meeting_form = MeetingForm(request.form)
-
         if meeting_form.validate_on_submit():
             with db_session() as session:
                 db_game = session.query(Game).filter(Game.name == meeting_form['game_name'].data).first()
@@ -225,8 +223,9 @@ def create_app():
 
         meeting_form = MeetingForm()
         meeting_data = join_meets(meet_id=session['current_meet'])
-        meet_date = str(meeting_data.meeting_date_time).split()[0]
-        meet_time = str(meeting_data.meeting_date_time).split()[1].split('+')[0]
+        meet_time = meeting_data.meeting_date_time.strftime("%H:%M:%S")
+        meet_date = meeting_data.meeting_date_time.strftime("%Y-%m-%d")
+        print(meet_time, type(meet_time))
         return render_template(
             'edit_meeting.html',
             page_title=title,
@@ -244,7 +243,7 @@ def create_app():
         meeting_id = int(request.args['current_meet'])
         if form_control.validate_on_submit and form_control.submit_confirm:
             with db_session() as session:
-                meeting = MeetingUser.get_meet(meeting_id, session)
+                meeting = MeetingUser.get_meet(session, meeting_id)
                 meeting.un_confirm_user() if meeting.confirmed else meeting.confirm_user()
                 session.commit()
 
@@ -303,12 +302,11 @@ def create_app():
 
             if buttons.submit_del.data:
                 with db_session() as session:
-                    meet = session.query(GameMeeting).filter(GameMeeting.id == buttons.current_meet.data).first()
-                    player = session.query(MeetingUser).filter(
-                        MeetingUser.meeting_id == meet.id
+                    player = session.query(MeetingUser).join(GameMeeting).filter(
+                        GameMeeting.id == buttons.current_meet.data
                     ).filter(
-                        MeetingUser.user_id == current_user.id
-                    ).one()
+                        MeetingUser.meeting_id == GameMeeting.id
+                    ).filter(MeetingUser.user_id == current_user.id).one()
                     session.delete(player)
                     session.commit()
                 return redirect(url_for('meetings'))
