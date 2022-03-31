@@ -6,17 +6,7 @@
 <section class="content container bg-light">
 
     <div class="row mt-3">
-  
-      <div class="col-4">
-        {% with messages = get_flashed_messages() %}
-          {% if messages %}
-          <div class="alert alert-warning" role="alert">
-            {% for message in messages %}
-                {{ message }}<br>
-              {% endfor %}
-            </div>
-          {% endif %}
-        {% endwith %}
+
         <div class="p-4 py-3">
           <form action="{{ url_for('process_login') }}" method="post">
               {{ form.hidden_tag() }}

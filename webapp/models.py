@@ -65,7 +65,7 @@ class GameMeeting(db.Model, UserMixin):
     game_id = Column(Integer, ForeignKey('games.id'), index=True, nullable=True)
     user = relationship('User', backref='game_meetings', foreign_keys=[owner_id], lazy='joined')
     users = relationship('MeetingUser', lazy='joined')
-    game = relationship("Game", lazy='joined')
+    game = relationship("Game", lazy='subquery')
 
     def repr(self):
         return f'{self.user}\'s {GameMeeting.game_name}'
@@ -82,7 +82,7 @@ class MeetingUser(db.Model):
     user_id = Column(Integer, ForeignKey('users.id'), index=True, nullable=False)
     meeting_id = Column(Integer, ForeignKey('game_meetings.id'), index=True, nullable=False)
     confirmed = Column(Boolean, nullable=False)
-    user = relationship("User", lazy='joined')
+    user = relationship("User", lazy='subquery')
 
 
 class Game(db.Model):

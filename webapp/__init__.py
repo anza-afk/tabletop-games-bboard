@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date
 from werkzeug.security import generate_password_hash
 from flask import Flask, redirect, render_template, flash, url_for, session, request, jsonify
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
@@ -18,6 +18,7 @@ migrate = Migrate()
 def create_app():
     app = Flask(__name__)
     app.config.from_pyfile('config.py')
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(app)
     migrate.init_app(app, db)
     login_manager = LoginManager()
@@ -272,9 +273,14 @@ def create_app():
         title = 'LFG'
         buttons = ButtonForm()
         page = int(request.args.get('p', 1))
-        if buttons.validate_on_submit():
-            if buttons.submit_add_wish.data:
-                with db_session() as session:
+        with db_session() as session:
+            if buttons.validate_on_submit():
+                meet_data = sub_to_meetings(current_user.id)
+                if meet_data.count() >= 10:
+                    flash('Ошибка подписки. Вы подписаны на максимальное количество встреч')
+                    return redirect(url_for('meetings'))
+                if buttons.submit_add_wish.data:
+                    # with db_session() as session:
                     meet = session.query(GameMeeting).filter(GameMeeting.id == buttons.current_meet.data).first()
                     new_player = MeetingUser(
                         user_id=current_user.id,
@@ -290,10 +296,10 @@ def create_app():
                     else:
                         session.add(new_player)
                         session.commit()
-                return redirect(url_for('meets'))
+                    return redirect(url_for('meetings'))
 
-            if buttons.submit_del.data:
-                with db_session() as session:
+                if buttons.submit_del.data:
+                    # with db_session() as session:
                     meet = session.query(GameMeeting).filter(GameMeeting.id == buttons.current_meet.data).first()
                     player = session.query(MeetingUser).filter(
                         MeetingUser.meeting_id == meet.id
@@ -302,27 +308,28 @@ def create_app():
                     ).one()
                     session.delete(player)
                     session.commit()
-                return redirect(url_for('meets'))
+                    return redirect(url_for('meets'))
 
-            if buttons.submit_edit.data:
-                return redirect(url_for('profile'))
+                if buttons.submit_edit.data:
+                    return redirect(url_for('profile'))
 
-            return redirect(url_for('meetings'))
+                return redirect(url_for('meetings'))
 
-        with db_session() as session:
+            # with db_session() as session:
             active_games = GameMeeting.active_games(session)
             query = active_games.order_by(GameMeeting.meeting_date_time.asc())
             meets_list = paginate(query, page, GAMES_PER_PAGE).all()
             last_page = ceil(active_games.count() / GAMES_PER_PAGE)
             current_user_meetings = sub_to_meetings(current_user.id)
-        return render_template(
-            'meetings.html',
-            meets_list=meets_list,
-            page_title=title,
-            current_page=page,
-            last_page=last_page,
-            buttons=buttons,
-            current_user=current_user,
-            current_user_meetings=current_user_meetings)
+            return render_template(
+                'meetings.html',
+                meets_list=meets_list,
+                page_title=title,
+                current_page=page,
+                last_page=last_page,
+                buttons=buttons,
+                current_user=current_user,
+                current_user_meetings=current_user_meetings
+            )
 
     return app
