@@ -5,9 +5,40 @@
     <div class="row">
 
         <div class="col-md-4 border-right">
-            <div class="d-flex flex-column align-items-center text-center"><img class="rounded-circle mt-5" width="150px" src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"><span class="font-weight-bold">{{ current_user.username }}</span><span class="text-black-50">{{ current_user.email }}</span><span> </span>
+            <div class="d-flex flex-column align-items-center text-center"><img class="rounded-circle mt-5" width="150px" src={{ current_user.user_profile.avatar }}>
+                <a href="#" data-toggle="modal" data-target="#AvatarModal{{current_user.username}}" class="card-subtitle mb-2 text-primary">Сменить аватар</a>
+                <span class="font-weight-bold">{{ current_user.username }}</span><span class="text-black-50">{{ current_user.email }}</span><span> </span>
             </div>
 
+            <div class="modal fade bd-example-modal-sm" id="AvatarModal{{current_user.username}}" tabindex="-1" role="dialog" aria-labelledby="AvatarModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-sm" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="AvatarModalLabel">Выберите аватар:</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            
+                            <div class="row mt-2 ml-2">
+                                <form action="{{ url_for('change_avatar') }}" method="post">
+                                    {{ avatar_form.hidden_tag() }}
+                                    <div class="form-select form-select-lg mb-3">
+                                        {{ avatar_form.choose_avatar.label }}<br>{{ avatar_form.choose_avatar() }}
+                                    </div>
+                                    <div class="form-group">
+                                    {{ avatar_form.submit() }}
+                                    </div>
+                                </form>                     
+                            </div>                                 
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="row d-flex flex-column align-items-center text-center">        
                 <!-- <h4 class="text-right">Профиль {{ current_user.username }}</h4> -->
                 <div class=""><label class="labels">Имя: {{ profile_data.name }}</div>

@@ -3,9 +3,8 @@ import datetime
 from webapp.database import db_session
 from webapp.models import User
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, DateField, TextAreaField, TimeField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, DateField, TextAreaField, TimeField, SelectField
 from wtforms.validators import DataRequired, EqualTo, Email, ValidationError, Length, NumberRange
-
 
 class LoginForm(FlaskForm):
     username = StringField(
@@ -210,7 +209,13 @@ class ButtonForm(FlaskForm):
         'Редактировать встречу',
         render_kw={"class": "btn btn-primary"}
     )
-    open_game_info = SubmitField(
-        '?',
+
+
+class AvatarForm(FlaskForm):
+    choose_avatar = SelectField(
+        'Выберите аватар'
+    )
+    submit = SubmitField(
+        'Сменить',
         render_kw={"class": "btn btn-primary"}
     )

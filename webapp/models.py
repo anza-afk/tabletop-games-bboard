@@ -44,6 +44,7 @@ class UserProfile(db.Model, UserMixin):
     favorite_games = Column(String())
     desired_games = Column(String())
     about_user = Column(String())
+    avatar = Column(String())
 
     def __repr__(self) -> str:
         return f'Пользователь {self.name}'

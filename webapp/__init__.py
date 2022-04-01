@@ -4,14 +4,14 @@ from flask import Flask, redirect, render_template, flash, url_for, session, req
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from flask_migrate import Migrate
 from news_parser.test_parser import result_news
-from webapp.forms import LoginForm, RegistrationForm, ProfileForm, MeetingForm, ButtonForm
+from webapp.forms import LoginForm, RegistrationForm, ProfileForm, MeetingForm, ButtonForm, AvatarForm
 from webapp.users import add_user, add_profile, join_profile, join_meets, update_profile, update_meeting, add_meeting, paginate, owner_meetings, sub_to_meetings
 from webapp.models import Game, User, UserProfile, GameMeeting, MeetingUser
 from webapp.config import GAMES_PER_PAGE
 from webapp.database import db, db_session
 from math import ceil
 from sqlalchemy.orm import load_only
-
+import os
 migrate = Migrate()
 
 
@@ -107,6 +107,10 @@ def create_app():
         title = f'Профиль {current_user.username}'
 
         buttons = ButtonForm()
+        avatar_form = AvatarForm()
+
+        img_dict = os.listdir(os.path.join(app.static_folder, "images/avatars"))
+        avatar_form.choose_avatar.choices = [(f'static/images/avatars/{img}', img, ) for img in img_dict]
 
         if buttons.validate_on_submit():
             if buttons.submit_del.data:
@@ -124,15 +128,28 @@ def create_app():
         profile_data = join_profile(current_user.id)
         meets_data = owner_meetings(current_user.id).order_by(GameMeeting.meeting_date_time.asc())
         meets_user = sub_to_meetings(current_user.id).order_by(GameMeeting.meeting_date_time.asc())
-
         return render_template(
             'profile.html',
             page_title=title,
             profile_data=profile_data,
             meets_data=meets_data,
             meets_user=meets_user,
-            buttons=buttons
+            buttons=buttons,
+            img_dict=img_dict,
+            avatar_form=avatar_form
         )
+
+    @app.route('/change_avatar', methods=['POST', 'GET'])
+    @login_required
+    def change_avatar():
+        avatar_form = AvatarForm()
+        with db_session() as session:
+            profile = session.query(UserProfile).filter(UserProfile.owner_id == current_user.id).first()
+            profile.avatar = avatar_form['choose_avatar'].data
+            print(profile.owner_id, '-->', profile.avatar)
+            session.commit()
+        flash('Личные данные успешно сохранены!')
+        return redirect(url_for('profile'))
 
     @app.route('/edit_profile')
     @login_required
@@ -150,7 +167,6 @@ def create_app():
     @app.route('/submit_profile', methods=['POST', 'GET'])
     def submit_profile():
         form = ProfileForm()
-
 #        if form.validate_on_submit():
         if bool(UserProfile.query.filter_by(owner_id=current_user.id).first()):
             update_profile(form, current_user)
