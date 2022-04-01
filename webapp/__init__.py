@@ -1,10 +1,11 @@
-from datetime import date
+from datetime import date, datetime
+from sqlalchemy import update
 from werkzeug.security import generate_password_hash
 from flask import Flask, redirect, render_template, flash, url_for, session, request, jsonify
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from flask_migrate import Migrate
 from news_parser.test_parser import result_news
-from webapp.forms import LoginForm, RegistrationForm, ProfileForm, MeetingForm, ButtonForm
+from webapp.forms import LoginForm, RegistrationForm, ProfileForm, MeetingForm, ButtonForm, UserControlForm
 from webapp.users import add_user, add_profile, join_profile, join_meets, update_profile, update_meeting, add_meeting, paginate, owner_meetings, sub_to_meetings
 from webapp.models import Game, User, UserProfile, GameMeeting, MeetingUser
 from webapp.config import GAMES_PER_PAGE
@@ -109,17 +110,15 @@ def create_app():
         buttons = ButtonForm()
 
         if buttons.validate_on_submit():
-            if buttons.submit_del.data:
-                with db_session() as session:
-                    meet = session.query(GameMeeting).filter(GameMeeting.id == buttons.current_meet.data).first()
-                    player = session.query(MeetingUser).filter(
-                        MeetingUser.meeting_id == meet.id
-                    ).filter(
-                        MeetingUser.user_id == current_user.id
-                    ).one()
-                    session.delete(player)
-                    session.commit()
-                return redirect(url_for('profile'))
+            with db_session() as session:
+                player = session.query(MeetingUser).join(GameMeeting).filter(
+                    GameMeeting.id == buttons.current_meet.data
+                ).filter(
+                    MeetingUser.meeting_id == GameMeeting.id
+                ).filter(MeetingUser.user_id == current_user.id).one()
+                session.delete(player)
+                session.commit()
+            return redirect(url_for('profile'))
 
         profile_data = join_profile(current_user.id)
         meets_data = owner_meetings(current_user.id).order_by(GameMeeting.meeting_date_time.asc())
@@ -181,6 +180,7 @@ def create_app():
         """
         title = 'Создание встречи'
         meeting_form = MeetingForm(request.form)
+
         meet_data = owner_meetings(current_user.id)
         if meet_data.count() >= 10:
             flash('Ошибка создания встречи, Вы создали слишком много встреч.')
@@ -224,32 +224,50 @@ def create_app():
     def edit_meet():
         title = f'Встреча {current_user.username}'
         buttons = ButtonForm()
-        if buttons.validate_on_submit:
-            meet_id = buttons.current_meet.data
-            meeting_form = MeetingForm()
-            meeting_data = join_meets(meet_id=meet_id)
-            meet_date = str(meeting_data.meeting_date_time).split()[0]
-            meet_time = str(meeting_data.meeting_date_time).split()[1].split('+')[0]
+        confirm_form = UserControlForm()
 
-            session['current_meet'] = meeting_data.id
-            return render_template(
-                'edit_meeting.html',
-                page_title=title,
-                form=meeting_form,
-                meeting_data=meeting_data,
-                meet_time=meet_time,
-                meet_date=meet_date,
+        if buttons.validate_on_submit:
+            session['current_meet'] = (
+                buttons.current_meet.data if buttons.current_meet.data
+                else session['current_meet']
             )
+
+        meeting_form = MeetingForm()
+        meeting_data = join_meets(meet_id=session['current_meet'])
+        meet_time = meeting_data.meeting_date_time.strftime("%H:%M:%S")
+        meet_date = meeting_data.meeting_date_time.strftime("%Y-%m-%d")
+        print(meet_time, type(meet_time))
+        return render_template(
+            'edit_meeting.html',
+            page_title=title,
+            form=meeting_form,
+            meeting_data=meeting_data,
+            meet_time=meet_time,
+            meet_date=meet_date,
+            confirm_form=confirm_form
+        )
+
+    @app.route('/user_control', methods=['GET', 'POST'])
+    @login_required
+    def user_control():
+        form_control = UserControlForm()
+        meeting_id = int(request.args['current_meet'])
+        if form_control.validate_on_submit and form_control.submit_confirm:
+            with db_session() as session:
+                meeting = MeetingUser.get_meet(session, meeting_id)
+                meeting.un_confirm_user() if meeting.confirmed else meeting.confirm_user()
+                session.commit()
+
+        return redirect(url_for('edit_meet'))
 
     @app.route('/submit_edit_meet', methods=['POST'])
     @login_required
     def submit_edit_meet():
         meeting_form = MeetingForm()
         if meeting_form.validate_on_submit:
-            print(meeting_form.date_meeting.data)
-            print(meeting_form.time_meeting.data)
             update_meeting(meeting_form, session['current_meet'])
-            return redirect(url_for('profile'))
+
+        return redirect(url_for('edit_meet'))
 
     @app.route('/_autocomplete', methods=['GET'])
     def autocomplete():
@@ -296,19 +314,21 @@ def create_app():
                     else:
                         session.add(new_player)
                         session.commit()
-                    return redirect(url_for('meetings'))
 
-                if buttons.submit_del.data:
-                    # with db_session() as session:
-                    meet = session.query(GameMeeting).filter(GameMeeting.id == buttons.current_meet.data).first()
-                    player = session.query(MeetingUser).filter(
-                        MeetingUser.meeting_id == meet.id
+                return redirect(url_for('meetings'))
+
+            if buttons.submit_del.data:
+                with db_session() as session:
+                    player = session.query(MeetingUser).join(GameMeeting).filter(
+                        GameMeeting.id == buttons.current_meet.data
+
                     ).filter(
-                        MeetingUser.user_id == current_user.id
-                    ).one()
+                        MeetingUser.meeting_id == GameMeeting.id
+                    ).filter(MeetingUser.user_id == current_user.id).one()
                     session.delete(player)
                     session.commit()
-                    return redirect(url_for('meets'))
+
+                return redirect(url_for('meetings'))
 
                 if buttons.submit_edit.data:
                     return redirect(url_for('profile'))
