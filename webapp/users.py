@@ -105,9 +105,15 @@ def sub_to_meetings(user_id):
         return GameMeeting.active_games(session).join(GameMeeting.users).filter(MeetingUser.user_id == user_id)
 
 
+
 def game_full_info(game_id):
     """
     Возвращает инфо по игре по её id
     """
     with db_session() as session:
         return session.query(Game).filter(Game.id == game_id).first()
+
+
+# def get_meet(meeting_id):
+#     with db_session() as session:
+#         return session.query(MeetingUser).filter(MeetingUser.id == meeting_id).one()

@@ -219,3 +219,19 @@ class AvatarForm(FlaskForm):
         'Сменить',
         render_kw={"class": "btn btn-primary"}
     )
+
+
+class UserControlForm(FlaskForm):
+    current_meet = IntegerField()
+    submit_confirm = SubmitField(
+        '+',
+        render_kw={"class": "btn btn-primary"}
+    )
+    submit_un_confirm = SubmitField(
+        '-',
+        render_kw={"class": "btn btn-primary"}
+    )
+    # submit_del = SubmitField(
+    #     '-',
+    #     render_kw={"class": "btn btn-primary"}
+    # )
