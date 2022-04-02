@@ -111,26 +111,26 @@
     <nav aria-label="Page navigation example">
       <ul class="pagination">
         {% if current_page != 1 and current_page-1 !=1 and current_page-2 !=1 %}
-        <li class="page-item"><a class="page-link" href="/meetings?p=1">1</a></li>
+        <li class="page-item"><a class="page-link" href="{{ url_for('meeting.meetings') }}?p=1">1</a></li>
         {% endif %}
         {% if current_page-1 > 1 %}
-        <li class="page-item"><a class="page-link" href="/meetings?p={{ current_page-2 }}">{{ current_page-2 }}</a></li>
+        <li class="page-item"><a class="page-link" href="{{ url_for('meeting.meetings') }}?p={{ current_page-2 }}">{{ current_page-2 }}</a></li>
         {% endif %}
         
         {% if current_page > 1 %}
-        <li class="page-item"><a class="page-link" href="/meetings?p={{ current_page-1 }}">{{ current_page-1 }}</a></li>
+        <li class="page-item"><a class="page-link" href="{{ url_for('meeting.meetings') }}?p={{ current_page-1 }}">{{ current_page-1 }}</a></li>
         {% endif %}
         
-        <li class="page-item"><a class="page-link bg-primary text-white" href="#">{{ current_page }}</a></li>
+        <li class="page-item"><a class="page-link bg-primary text-white" href="{{ url_for('meeting.meetings') }}">{{ current_page }}</a></li>
         
         {% if current_page+1 < last_page %}
-        <li class="page-item"><a class="page-link" href="/meetings?p={{ current_page+1 }}">{{ current_page+1 }}</a></li>
+        <li class="page-item"><a class="page-link" href="{{ url_for('meeting.meetings') }}?p={{ current_page+1 }}">{{ current_page+1 }}</a></li>
         {% endif %}
         {% if current_page+2 < last_page %}
-        <li class="page-item"><a class="page-link" href="/meetings?p={{ current_page+2 }}">{{ current_page+2 }}</a></li>
+        <li class="page-item"><a class="page-link" href="{{ url_for('meeting.meetings') }}?p={{ current_page+2 }}">{{ current_page+2 }}</a></li>
         {% endif %}
         {% if current_page != last_page %}
-        <li class="page-item"><a class="page-link" href="/meetings?p={{ last_page }}">{{ last_page }}</a></li>
+        <li class="page-item"><a class="page-link" href="{{ url_for('meeting.meetings') }}?p={{ last_page }}">{{ last_page }}</a></li>
         {% endif %}
       </ul>
     </nav>
