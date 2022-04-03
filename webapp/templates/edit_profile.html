@@ -8,7 +8,7 @@
             <div class="d-flex flex-column align-items-center text-center p-3 py-5"><img class="rounded-circle mt-5" width="150px" src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"><span class="font-weight-bold">{{ current_user.username }}</span><span class="text-black-50">{{ current_user.email }}</span><span> </span></div>
         </div>
         <div class="col-md-5 border-right">
-            <form action="{{ url_for('submit_profile') }}" method="post" class="p-3 py-5">
+            <form action="{{ url_for('user.submit_profile') }}" method="post" class="p-3 py-5">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h4 class="text-right">Profile Settings</h4>
                 </div>

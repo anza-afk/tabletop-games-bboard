@@ -6,7 +6,7 @@
     <div class="row">
       <div class="col-4 border-right">
 
-        <form action="{{url_for('submit_edit_meet')}}" method="post" class="py-3">
+        <form action="{{url_for('meeting.submit_edit_meet')}}" method="post" class="py-3">
             <div class="d-flex justify-content-between align-items-center mb-3">
               <h4 class="text-right">{{ meeting_data.game_name }}</h4>
             </div>
@@ -17,7 +17,7 @@
               $(function() {
                 $("#game_autocomplete").autocomplete({
                   source:function(request, response) {
-                    $.getJSON("{{url_for('autocomplete')}}",{
+                    $.getJSON("{{url_for('meeting.autocomplete')}}",{
                       q: request.term,
                     }, function(data) {
                       response(data);
@@ -56,7 +56,7 @@
           {% if not user.confirmed %}
                 <a href="#" data-toggle="modal" data-target="#ProfileModal{{user.user.username}}" class="link-primary"><h6 class="card-subtitle mb-2 text-primary">
                   {{ user.user.username }}</h6></a>
-                  <form action="{{url_for('user_control')}}" class="py-3">
+                  <form action="{{url_for('meeting.user_control')}}" class="py-3">
                     {{ form.hidden_tag() }}
                     {{ confirm_form.current_meet(value=user.id, hidden=True) }}
                     {{ confirm_form.submit_confirm() }}
@@ -105,7 +105,7 @@
           {% if user.confirmed %}
                 <a href="#" data-toggle="modal" data-target="#ProfileModal{{user.user.username}}" class="link-primary"><h6 class="card-subtitle mb-2 text-primary">
                   {{ user.user.username }}</h6></a>
-                  <form action="{{url_for('user_control')}}" class="py-3">
+                  <form action="{{url_for('meeting.user_control')}}" class="py-3">
                     {{ form.hidden_tag() }}
                     {{ confirm_form.current_meet(value=user.id, hidden=True) }}
                     {{ confirm_form.submit_un_confirm() }}

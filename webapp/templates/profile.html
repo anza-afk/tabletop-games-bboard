@@ -22,7 +22,7 @@
                         <div class="modal-body">
                             
                             <div class="row mt-2 ml-2">
-                                <form action="{{ url_for('change_avatar') }}" method="post">
+                                <form action="{{ url_for('user.change_avatar') }}" method="post">
                                     {{ avatar_form.hidden_tag() }}
                                     <div class="form-select form-select-lg mb-3">
                                         {{ avatar_form.choose_avatar.label }}<br>{{ avatar_form.choose_avatar() }}
@@ -107,7 +107,7 @@
                                  
                                 </div>
                                 <div class="modal-footer">
-                                    <form action="{{url_for('edit_meet')}}" method="post" class="">
+                                    <form action="{{url_for('meeting.edit_meet')}}" method="post" class="">
                                         {{ buttons.hidden_tag() }}
                                         {{ buttons.current_meet(value=meet.id, hidden=True) }}
                                         {{ buttons.submit_edit() }}

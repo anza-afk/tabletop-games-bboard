@@ -1,9 +1,8 @@
-from flask import request
-from requests import get, RequestException, Session
+from requests import RequestException, Session
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
-from db import db_session
-from models import Link
+from webapp.database import db_session
+from webapp.game.models import Link
 from sqlalchemy.exc import IntegrityError
 
 
@@ -31,10 +30,10 @@ def get_number_of_last_page_game_list(first_page: str, session: Session) -> int:
     soup = BeautifulSoup(last_page_html, 'html.parser')
     last_page_url = soup.find(
         'ul', class_='pagination'
-        ).find('a', class_='last')['href']
+    ).find('a', class_='last')['href']
     number_of_last_page = int(
         urlparse(last_page_url)[4].split('&')[0].split('=')[1]
-        )
+    )
     return number_of_last_page
 
 
@@ -55,15 +54,16 @@ def add_links_to_db(links: list) -> None:
     """
     Записыват ссылки на игры в БД.
     """
-    for link_game in links:
-        try:
-            db_session.add(Link(
-                link=link_game['link'],
-                status=link_game['status']
-            ))
-            db_session.commit()
-        except IntegrityError:
-            db_session.rollback()
+    with db_session() as session:
+        for link_game in links:
+            try:
+                session.add(Link(
+                    link=link_game['link'],
+                    status=link_game['status']
+                ))
+            except IntegrityError:
+                db_session.rollback()
+        session.commit()
 
 
 if __name__ == "__main__":

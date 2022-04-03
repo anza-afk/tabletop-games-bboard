@@ -1,6 +1,7 @@
-from flask import Flask
 from webapp.database import db_session
-from webapp.models import Game, User, UserProfile,  GameMeeting, MeetingUser
+from webapp.user.models import User, UserProfile
+from webapp.meeting.models import GameMeeting, MeetingUser
+from webapp.game.models import Game
 from flask_wtf import FlaskForm
 import sqlalchemy.exc
 
@@ -105,15 +106,9 @@ def sub_to_meetings(user_id):
         return GameMeeting.active_games(session).join(GameMeeting.users).filter(MeetingUser.user_id == user_id)
 
 
-
 def game_full_info(game_id):
     """
     Возвращает инфо по игре по её id
     """
     with db_session() as session:
         return session.query(Game).filter(Game.id == game_id).first()
-
-
-# def get_meet(meeting_id):
-#     with db_session() as session:
-#         return session.query(MeetingUser).filter(MeetingUser.id == meeting_id).one()

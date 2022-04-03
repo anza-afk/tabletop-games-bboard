@@ -15,7 +15,7 @@
                 $(function() {
                   $("#game_autocomplete").autocomplete({
                     source:function(request, response) {
-                      $.getJSON("{{url_for('autocomplete')}}",{
+                      $.getJSON("{{url_for('meeting.autocomplete')}}",{
                         q: request.term,
                       }, function(data) {
                         response(data);
