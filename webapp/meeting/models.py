@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, JSON, ForeignKey, Date, DateTime, Boolean
 from sqlalchemy.orm import relationship
-from webapp.database import db
+from webapp.database import Base, engine, db
 from flask_login import UserMixin
 from datetime import datetime
 
@@ -48,3 +48,7 @@ class MeetingUser(db.Model):
 
     def un_confirm_user(self):
         self.confirmed = False
+
+
+if __name__ == '__main__':
+    Base.metadata.create_all(bind=engine)

@@ -1,7 +1,7 @@
 from webapp.database import db_session
 from webapp.user.models import User, UserProfile
 from webapp.meeting.models import GameMeeting, MeetingUser
-from webapp.models import Game
+from webapp.game.models import Game
 from flask_wtf import FlaskForm
 import sqlalchemy.exc
 

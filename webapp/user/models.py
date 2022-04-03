@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
-from webapp.database import db
+from webapp.database import Base, engine, db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
@@ -47,3 +47,7 @@ class UserProfile(db.Model, UserMixin):
 
     def __repr__(self) -> str:
         return f'Пользователь {self.name}'
+
+
+if __name__ == '__main__':
+    Base.metadata.create_all(bind=engine)

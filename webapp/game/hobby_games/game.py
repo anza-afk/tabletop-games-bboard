@@ -41,7 +41,7 @@ class CardGame:
         try:
             self.brand = ''.join(
                 self.soup.find('a', class_='manufacturers__value').text.split()
-                )
+            )
         except AttributeError:
             self.brand = None
 
@@ -54,7 +54,7 @@ class CardGame:
             self.tags = [
                 a.text.strip() for a in
                 self.soup.find('div', class_='tags').find_all('a')
-                ]
+            ]
         except AttributeError:
             self.tags = None
 

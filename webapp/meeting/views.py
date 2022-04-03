@@ -3,7 +3,7 @@ from flask_login import current_user, login_required
 from webapp.meeting.forms import MeetingForm, ButtonForm
 from webapp.user.forms import UserControlForm
 from webapp.users import join_meets, update_meeting, add_meeting, paginate, owner_meetings, sub_to_meetings
-from webapp.models import Game
+from webapp.game.models import Game
 from webapp.meeting.models import MeetingUser, GameMeeting
 from webapp.config import GAMES_PER_PAGE
 from webapp.database import db_session

@@ -1,8 +1,7 @@
-from flask import session
 from requests import Session
 from links import get_html
-from db import db_session
-from models import GameHg, Link
+from webapp.database import db_session
+from webapp.game.models import GameHg, Link
 from game import CardGame
 
 
@@ -11,8 +10,9 @@ def add_games_to_db(games_params: list[dict]) -> None:
     Записывает в ДБ полученный список игр с параметрами,
     которые содержатся в словарях.
     """
-    db_session.bulk_insert_mappings(GameHg, games_params)
-    db_session.commit()
+    with db_session() as session:
+        session.bulk_insert_mappings(GameHg, games_params)
+        session.commit()
 
 
 def get_links_to_collect() -> list[tuple]:
