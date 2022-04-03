@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, JSON, ForeignKey, Date, DateTime, Boolean
 from sqlalchemy.orm import relationship
-from webapp.database import Base, engine, db
+from webapp.database import db
 from flask_login import UserMixin
 from datetime import datetime
 
@@ -28,7 +28,32 @@ class GameMeeting(db.Model, UserMixin):
 
     @classmethod
     def active_games(cls, session):
+        """
+        Возвращает список игр с датой и временем больше, чем текущие.
+        """
         return session.query(cls).filter(cls.meeting_date_time > datetime.now())
+
+    @classmethod
+    def join_meetings(cls, meeting_id, session):
+        """
+        Возвращает данные встречи по её id
+        """
+        return cls.active_games(session).filter(GameMeeting.id == meeting_id).one()
+
+    @classmethod
+    def owner_meetings(cls, user_id, session):
+        """
+        Возвращает список из активных встреч,созданные текущим пользователь
+        """
+
+        return cls.active_games(session).filter(cls.owner_id == user_id)
+
+    @classmethod
+    def sub_to_meetings(cls, user_id, session):
+        """
+        Возвращает список из активных встреч, на которые подписан текущий пользователь
+        """
+        return cls.active_games(session).join(cls.users).filter(MeetingUser.user_id == user_id)
 
 
 class MeetingUser(db.Model):
@@ -44,11 +69,13 @@ class MeetingUser(db.Model):
         return session.query(MeetingUser).filter(MeetingUser.id == meeting_id).one()
 
     def confirm_user(self):
+        """
+        Подтверждает пользователя для текущего экземляра встречи
+        """
         self.confirmed = True
 
     def un_confirm_user(self):
+        """
+        Отменяет подтверждение пользователя для текущего экземляра встречи
+        """
         self.confirmed = False
-
-
-if __name__ == '__main__':
-    Base.metadata.create_all(bind=engine)

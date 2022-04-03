@@ -14,6 +14,13 @@ class Game(db.Model):
     tags = Column(JSON())
     image = Column(String())
 
+    @classmethod
+    def game_full_info(cls, game_id, session):
+        """
+        Возвращает инфо по игре по её id
+        """
+        return session.query(cls).filter(cls.id == game_id).first()
+
 
 class Link(db.Model):
     __tablename__ = 'links_from_hg'
@@ -41,7 +48,3 @@ class GameHg(db.Model):
 
     def __repr__(self) -> str:
         return f'Игра {self.name} - {self.brand}'
-
-
-if __name__ == '__main__':
-    Base.metadata.create_all(bind=engine)

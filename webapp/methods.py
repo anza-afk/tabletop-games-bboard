@@ -1,7 +1,6 @@
 from webapp.database import db_session
 from webapp.user.models import User, UserProfile
-from webapp.meeting.models import GameMeeting, MeetingUser
-from webapp.game.models import Game
+from webapp.meeting.models import GameMeeting
 from flask_wtf import FlaskForm
 import sqlalchemy.exc
 
@@ -14,6 +13,7 @@ def add_user(new_user: User) -> bool:
     try:
         with db_session() as session:
             session.add(new_user)
+            session.add(new_user)
             session.commit()
         return True
     except sqlalchemy.exc:  # sqlalchemy.exc не обрабатываются, нужно понять как обрабатывать
@@ -21,12 +21,18 @@ def add_user(new_user: User) -> bool:
 
 
 def add_profile(new_profile: UserProfile) -> None:
+    """
+    Добавляет новый профиль в БД
+    """
     with db_session() as session:
         session.add(new_profile)
         session.commit()
 
 
 def update_profile(form, user_id) -> None:
+    """
+    Обновляет данные профиля в БД
+    """
     with db_session() as session:
         profile = session.query(UserProfile).filter(UserProfile.owner_id == user_id.id).first()
         profile_email = session.query(User).filter(User.email == user_id.email).first()
@@ -43,6 +49,9 @@ def update_profile(form, user_id) -> None:
 
 
 def update_meeting(form: FlaskForm, meeting_id: int) -> None:
+    """
+    Обновляет данные встречи в БД
+    """
     with db_session() as session:
         meet = session.query(GameMeeting).filter(GameMeeting.id == meeting_id).first()
         meet.game_name = form['game_name'].data
@@ -51,11 +60,6 @@ def update_meeting(form: FlaskForm, meeting_id: int) -> None:
         meet.meeting_date_time = f"{form['date_meeting'].data} {form['time_meeting'].data}"
         meet.description = form['description'].data
         session.commit()
-
-
-def join_profile(user_id):
-    with db_session() as session:
-        return session.query(UserProfile).filter(UserProfile.owner_id == user_id).first()
 
 
 def add_meeting(new_meeting: GameMeeting) -> bool:
@@ -82,33 +86,9 @@ def paginate(query, page_number, page_limit):
     return query
 
 
-def join_meets(meet_id):
+def join_meets(meet_id):  # не смог сам убрать этот метод, изза особенностей во view. требуется пояснение от напарника
     """
     Возвращает данные встречи по её id
     """
     with db_session() as session:
         return GameMeeting.active_games(session).filter(GameMeeting.id == meet_id).one()
-
-
-def owner_meetings(user_id):
-    """
-    Возвращает список из активных встреч,созданные текущим пользователь
-    """
-    with db_session() as session:
-        return GameMeeting.active_games(session).filter(GameMeeting.owner_id == user_id)
-
-
-def sub_to_meetings(user_id):
-    """
-    Возвращает список из активных встреч, на которые подписан текущий пользователь
-    """
-    with db_session() as session:
-        return GameMeeting.active_games(session).join(GameMeeting.users).filter(MeetingUser.user_id == user_id)
-
-
-def game_full_info(game_id):
-    """
-    Возвращает инфо по игре по её id
-    """
-    with db_session() as session:
-        return session.query(Game).filter(Game.id == game_id).first()

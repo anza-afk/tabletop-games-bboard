@@ -5,7 +5,10 @@
     <div class="row">
 
         <div class="col-md-4 border-right">
-            <div class="d-flex flex-column align-items-center text-center"><img class="rounded-circle mt-5" width="150px" src={{ current_user.user_profile.avatar }}>
+            <div class="d-flex flex-column align-items-center text-center">
+                {% if current_user.user_profile.avatar %}
+                <img class="rounded-circle mt-5" width="150px" src={{ current_user.user_profile.avatar }}>
+                {% endif %}
                 <a href="#" data-toggle="modal" data-target="#AvatarModal{{current_user.username}}" class="card-subtitle mb-2 text-primary">Сменить аватар</a>
                 <span class="font-weight-bold">{{ current_user.username }}</span><span class="text-black-50">{{ current_user.email }}</span><span> </span>
             </div>
@@ -49,7 +52,7 @@
                 <div class=""><label class="labels">Хочу поиграть в:{{ profile_data.desired_games }}</div>
                 <div class=""><label class="labels">О себе:{{ profile_data.about_user }}</div>    
             </div>
-            <a href= "/edit_profile" class="mt-5 text-left">Редактировать профиль</a>
+            <a href= {{ url_for('user.edit_profile') }} class="mt-5 text-left">Редактировать профиль</a>
         </div>
        
         <div class="col-md-4"> 
@@ -107,11 +110,12 @@
                                  
                                 </div>
                                 <div class="modal-footer">
-                                    <form action="{{url_for('meeting.edit_meet')}}" method="post" class="">
+                                    <form action="{{url_for('meeting.edit_meeting')}}" method="post" class="">
                                         {{ buttons.hidden_tag() }}
                                         {{ buttons.current_meet(value=meet.id, hidden=True) }}
                                         {{ buttons.submit_edit() }}
                                     </form>
+                                    <!-- <button type="button" class="btn btn-primary" href="{{url_for('meeting.edit_meeting')}}?meeting={{ meet.id }}" method="post"s>{{ meet.id }}</button> -->
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
                                 </div>
                             </div>

@@ -3,7 +3,7 @@ from flask import Blueprint, redirect, render_template, flash, url_for
 from flask_login import current_user, login_user, logout_user, login_required
 from webapp.user.forms import LoginForm, RegistrationForm, ProfileForm
 from webapp.meeting.forms import ButtonForm, AvatarForm
-from webapp.users import add_user, add_profile, join_profile, update_profile, owner_meetings, sub_to_meetings
+from webapp.methods import add_user, add_profile, update_profile
 from webapp.user.models import User, UserProfile
 from webapp.meeting.models import MeetingUser, GameMeeting
 from webapp.database import db_session
@@ -62,7 +62,6 @@ def registration():
             email=registration_form['email'].data,
             role='1'
         )
-
         if add_user(new_user):
             flash('Вы успешно зарегистрировались!')
             return redirect(url_for('user.login'))
@@ -86,9 +85,8 @@ def profile():
     print(blueprint.static_folder)
     img_dict = os.listdir(os.path.join(blueprint.static_folder, "images/avatars"))
     avatar_form.choose_avatar.choices = [(f'static/images/avatars/{img}', img, ) for img in img_dict]
-
-    if buttons.validate_on_submit():
-        with db_session() as session:
+    with db_session() as session:
+        if buttons.validate_on_submit():
             player = session.query(MeetingUser).join(GameMeeting).filter(
                 GameMeeting.id == buttons.current_meet.data
             ).filter(
@@ -96,21 +94,32 @@ def profile():
             ).filter(MeetingUser.user_id == current_user.id).one()
             session.delete(player)
             session.commit()
-        return redirect(url_for('user.profile'))
-
-    profile_data = join_profile(current_user.id)
-    meets_data = owner_meetings(current_user.id).order_by(GameMeeting.meeting_date_time.asc())
-    meets_user = sub_to_meetings(current_user.id).order_by(GameMeeting.meeting_date_time.asc())
-    return render_template(
-        'profile.html',
-        page_title=title,
-        profile_data=profile_data,
-        meets_data=meets_data,
-        meets_user=meets_user,
-        buttons=buttons,
-        img_dict=img_dict,
-        avatar_form=avatar_form
-    )
+            return redirect(url_for('user.profile'))
+        if not UserProfile.join_profile(current_user.id, session):
+            new_profile = UserProfile(
+                owner_id=current_user.id,
+                name='',
+                surname='',
+                country='',
+                city='',
+                favorite_games='',
+                desired_games='',
+                about_user=''
+            )
+            add_profile(new_profile)
+        profile_data = UserProfile.join_profile(current_user.id, session)
+        meets_data = GameMeeting.owner_meetings(current_user.id, session).order_by(GameMeeting.meeting_date_time.asc())
+        meets_user = GameMeeting.sub_to_meetings(current_user.id, session).order_by(GameMeeting.meeting_date_time.asc())
+        return render_template(
+            'profile.html',
+            page_title=title,
+            profile_data=profile_data,
+            meets_data=meets_data,
+            meets_user=meets_user,
+            buttons=buttons,
+            img_dict=img_dict,
+            avatar_form=avatar_form
+        )
 
 
 @blueprint.route('/change_avatar', methods=['POST', 'GET'])
@@ -130,7 +139,8 @@ def change_avatar():
 @login_required
 def edit_profile():
     title = f'Профиль {current_user.username}'
-    profile_data = join_profile(current_user.id)
+    with db_session() as session:
+        profile_data = UserProfile.join_profile(current_user.id, session)
     profile_form = ProfileForm()
     return render_template(
         'edit_profile.html',

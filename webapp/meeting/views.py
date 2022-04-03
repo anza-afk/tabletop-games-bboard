@@ -2,7 +2,7 @@ from flask import Blueprint, redirect, render_template, flash, url_for, session,
 from flask_login import current_user, login_required
 from webapp.meeting.forms import MeetingForm, ButtonForm
 from webapp.user.forms import UserControlForm
-from webapp.users import join_meets, update_meeting, add_meeting, paginate, owner_meetings, sub_to_meetings
+from webapp.methods import join_meets, update_meeting, add_meeting, paginate
 from webapp.game.models import Game
 from webapp.meeting.models import MeetingUser, GameMeeting
 from webapp.config import GAMES_PER_PAGE
@@ -24,38 +24,37 @@ def create_meeting():
     """
     title = 'Создание встречи'
     meeting_form = MeetingForm(request.form)
+    with db_session() as session:
+        meet_data = GameMeeting.owner_meetings(current_user.id, session)
+        if meet_data.count() >= 10:
+            flash('Ошибка создания встречи, Вы создали слишком много встреч.')
+            return render_template(
+                'create_meeting.html',
+                page_title=title,
+                form=meeting_form,
+            )
 
-    meet_data = owner_meetings(current_user.id)
-    if meet_data.count() >= 10:
-        flash('Ошибка создания встречи, Вы создали слишком много встреч.')
-        return render_template(
-            'create_meeting.html',
-            page_title=title,
-            form=meeting_form,
-        )
-
-    if meeting_form.validate_on_submit():
-        with db_session() as session:
+        if meeting_form.validate_on_submit():
             db_game = session.query(Game).filter(Game.name == meeting_form['game_name'].data).first()
             game_id = db_game.id if db_game else None
-        new_meeting = GameMeeting(
-            game_name=meeting_form['game_name'].data,
-            owner_id=current_user.id,
-            create_date=date.today(),
-            number_of_players=meeting_form['number_of_players'].data,
-            meeting_place=meeting_form['meeting_place'].data,
-            meeting_date_time=f"{meeting_form['date_meeting'].data} {meeting_form['time_meeting'].data}",
-            description=meeting_form['description'].data,
-            subscribed_players=[],
-            confirmed_players=[],
-            game_id=game_id
-        )
+            new_meeting = GameMeeting(
+                game_name=meeting_form['game_name'].data,
+                owner_id=current_user.id,
+                create_date=date.today(),
+                number_of_players=meeting_form['number_of_players'].data,
+                meeting_place=meeting_form['meeting_place'].data,
+                meeting_date_time=f"{meeting_form['date_meeting'].data} {meeting_form['time_meeting'].data}",
+                description=meeting_form['description'].data,
+                subscribed_players=[],
+                confirmed_players=[],
+                game_id=game_id
+            )
 
-        if add_meeting(new_meeting):
-            flash('Вы успешно создали встречу!')
-            return redirect(url_for('meeting.meetings'))
+            if add_meeting(new_meeting):
+                flash('Вы успешно создали встречу!')
+                return redirect(url_for('meeting.meetings'))
 
-        flash('Ошибка создания встречи, попробуйте повторить позже.')
+            flash('Ошибка создания встречи, попробуйте повторить позже.')
 
     return render_template(
         'create_meeting.html',
@@ -64,9 +63,9 @@ def create_meeting():
     )
 
 
-@blueprint.route('/edit_meet', methods=['GET', 'POST'])
+@blueprint.route('/edit_meeting', methods=['GET', 'POST'])
 @login_required
-def edit_meet():
+def edit_meeting():
     title = f'Встреча {current_user.username}'
     buttons = ButtonForm()
     confirm_form = UserControlForm()
@@ -125,7 +124,7 @@ def meetings():
     page = int(request.args.get('p', 1))
     with db_session() as session:
         if buttons.validate_on_submit():
-            meet_data = sub_to_meetings(current_user.id)
+            meet_data = GameMeeting.sub_to_meetings(current_user.id, session)
             if meet_data.count() >= 10:
                 flash('Ошибка подписки. Вы подписаны на максимальное количество встреч')
                 return redirect(url_for('meeting.meetings'))
@@ -164,12 +163,11 @@ def meetings():
 
             # return redirect(url_for('meeting.meetings'))
 
-        # with db_session() as session:
         active_games = GameMeeting.active_games(session)
         query = active_games.order_by(GameMeeting.meeting_date_time.asc())
         meets_list = paginate(query, page, GAMES_PER_PAGE).all()
         last_page = ceil(active_games.count() / GAMES_PER_PAGE)
-        current_user_meetings = sub_to_meetings(current_user.id)
+        current_user_meetings = GameMeeting.sub_to_meetings(current_user.id, session)
         return render_template(
             'meetings.html',
             meets_list=meets_list,

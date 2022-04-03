@@ -48,6 +48,13 @@ class UserProfile(db.Model, UserMixin):
     def __repr__(self) -> str:
         return f'Пользователь {self.name}'
 
+    @classmethod
+    def join_profile(cls, user_id, session):
+        """
+        Возвращает из БД данные профиля юзера с заданным ID
+        """
+        return session.query(cls).filter(cls.owner_id == user_id).first()
+
 
 if __name__ == '__main__':
     Base.metadata.create_all(bind=engine)
