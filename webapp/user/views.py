@@ -3,13 +3,14 @@ from flask import Blueprint, redirect, render_template, flash, url_for
 from flask_login import current_user, login_user, logout_user, login_required
 from webapp.user.forms import LoginForm, RegistrationForm, ProfileForm
 from webapp.meeting.forms import ButtonForm, AvatarForm
-from webapp.users import add_user, add_profile, join_profile, update_profile, owner_meetings, sub_to_meetings
+from webapp.methods import update_profile
 from webapp.user.models import User, UserProfile
 from webapp.meeting.models import MeetingUser, GameMeeting
 from webapp.database import db_session
 import os
+import sqlalchemy.exc
 
-blueprint = Blueprint('user', __name__, url_prefix='/users', static_folder='static')
+blueprint = Blueprint('user', __name__, url_prefix='/user', static_folder='static')
 
 
 @blueprint.route('/login')
@@ -56,18 +57,20 @@ def registration():
         hash_pass = generate_password_hash(
             registration_form['password'].data
         )
-        new_user = User(
-            username=registration_form['username'].data,
-            password=hash_pass,
-            email=registration_form['email'].data,
-            role='1'
-        )
-
-        if add_user(new_user):
-            flash('Вы успешно зарегистрировались!')
-            return redirect(url_for('user.login'))
-
-        flash('Ошибка регистрации, попробуйте повторить позже.')
+        with db_session() as session:
+            new_user = User(
+                username=registration_form['username'].data,
+                password=hash_pass,
+                email=registration_form['email'].data,
+                role='1'
+            )
+            try:
+                session.add(new_user)
+                session.commit()
+                flash('Вы успешно зарегистрировались!')
+                return redirect(url_for('user.login'))
+            except sqlalchemy.exc:  # sqlalchemy.exc не обрабатываются, нужно понять как обрабатывать
+                flash('Ошибка регистрации, попробуйте повторить позже.')
 
     return render_template(
         'registration.html',
@@ -86,9 +89,8 @@ def profile():
     print(blueprint.static_folder)
     img_dict = os.listdir(os.path.join(blueprint.static_folder, "images/avatars"))
     avatar_form.choose_avatar.choices = [(f'static/images/avatars/{img}', img, ) for img in img_dict]
-
-    if buttons.validate_on_submit():
-        with db_session() as session:
+    with db_session() as session:
+        if buttons.validate_on_submit():
             player = session.query(MeetingUser).join(GameMeeting).filter(
                 GameMeeting.id == buttons.current_meet.data
             ).filter(
@@ -96,21 +98,33 @@ def profile():
             ).filter(MeetingUser.user_id == current_user.id).one()
             session.delete(player)
             session.commit()
-        return redirect(url_for('user.profile'))
-
-    profile_data = join_profile(current_user.id)
-    meets_data = owner_meetings(current_user.id).order_by(GameMeeting.meeting_date_time.asc())
-    meets_user = sub_to_meetings(current_user.id).order_by(GameMeeting.meeting_date_time.asc())
-    return render_template(
-        'profile.html',
-        page_title=title,
-        profile_data=profile_data,
-        meets_data=meets_data,
-        meets_user=meets_user,
-        buttons=buttons,
-        img_dict=img_dict,
-        avatar_form=avatar_form
-    )
+            return redirect(url_for('user.profile'))
+        if not UserProfile.join_profile(current_user.id, session):
+            new_profile = UserProfile(
+                owner_id=current_user.id,
+                name='',
+                surname='',
+                country='',
+                city='',
+                favorite_games='',
+                desired_games='',
+                about_user=''
+            )
+            session.add(new_profile)
+            session.commit()
+        profile_data = UserProfile.join_profile(current_user.id, session)
+        meets_data = GameMeeting.owner_meetings(current_user.id, session).order_by(GameMeeting.meeting_date_time.asc())
+        meets_user = GameMeeting.sub_to_meetings(current_user.id, session).order_by(GameMeeting.meeting_date_time.asc())
+        return render_template(
+            'profile.html',
+            page_title=title,
+            profile_data=profile_data,
+            meets_data=meets_data,
+            meets_user=meets_user,
+            buttons=buttons,
+            img_dict=img_dict,
+            avatar_form=avatar_form
+        )
 
 
 @blueprint.route('/change_avatar', methods=['POST', 'GET'])
@@ -130,7 +144,8 @@ def change_avatar():
 @login_required
 def edit_profile():
     title = f'Профиль {current_user.username}'
-    profile_data = join_profile(current_user.id)
+    with db_session() as session:
+        profile_data = UserProfile.join_profile(current_user.id, session)
     profile_form = ProfileForm()
     return render_template(
         'edit_profile.html',
@@ -143,21 +158,24 @@ def edit_profile():
 @blueprint.route('/submit_profile', methods=['POST', 'GET'])
 def submit_profile():
     form = ProfileForm()
-    if bool(UserProfile.query.filter_by(owner_id=current_user.id).first()):
-        update_profile(form, current_user)
-        flash('Личные данные успешно сохранены!')
-        return redirect(url_for('user.profile'))
-    new_profile = UserProfile(
-        owner_id=current_user.id,
-        name=form['name'].data,
-        surname=form['surname'].data,
-        country=form['country'].data,
-        city=form['city'].data,
-        favorite_games=form['favorite_games'].data,
-        desired_games=form['desired_games'].data,
-        about_user=form['about_user'].data
-    )
+    with db_session() as session:
+        if bool(UserProfile.query.filter_by(owner_id=current_user.id).first()):
+            update_profile(form, current_user, session)
+            flash('Личные данные успешно сохранены!')
+            return redirect(url_for('user.profile'))
+        new_profile = UserProfile(
+            owner_id=current_user.id,
+            name=form['name'].data,
+            surname=form['surname'].data,
+            country=form['country'].data,
+            city=form['city'].data,
+            favorite_games=form['favorite_games'].data,
+            desired_games=form['desired_games'].data,
+            about_user=form['about_user'].data
+        )
 
-    add_profile(new_profile)
+        session.add(new_profile)
+        session.commit()
+
     flash('Личные данные успешно сохранены!')
     return redirect(url_for('user.profile'))
