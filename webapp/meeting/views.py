@@ -1,17 +1,18 @@
-from flask import Blueprint, redirect, render_template, flash, url_for, session, request, jsonify
+from flask import Blueprint, redirect, render_template, flash, url_for, request, jsonify, session as user_session
 from flask_login import current_user, login_required
 from webapp.meeting.forms import MeetingForm, ButtonForm
 from webapp.user.forms import UserControlForm
-from webapp.methods import join_meets, update_meeting, add_meeting, paginate
+from webapp.methods import update_meeting, add_meeting, paginate
 from webapp.game.models import Game
 from webapp.meeting.models import MeetingUser, GameMeeting
 from webapp.config import GAMES_PER_PAGE
 from webapp.database import db_session
 from math import ceil
-from datetime import date
+from datetime import date, timezone, tzinfo
 from sqlalchemy.orm import load_only
+import pytz
 
-blueprint = Blueprint('meeting', __name__, url_prefix='/meeting')
+blueprint = Blueprint('meeting', __name__, url_prefix='/meetings')
 
 
 @blueprint.route('/create_meeting', methods=['POST', 'GET'])
@@ -50,7 +51,7 @@ def create_meeting():
                 game_id=game_id
             )
 
-            if add_meeting(new_meeting):
+            if add_meeting(new_meeting, session):
                 flash('Вы успешно создали встречу!')
                 return redirect(url_for('meeting.meetings'))
 
@@ -71,15 +72,17 @@ def edit_meeting():
     confirm_form = UserControlForm()
 
     if buttons.validate_on_submit:
-        session['current_meet'] = (
+        user_session['current_meet'] = (
             buttons.current_meet.data if buttons.current_meet.data
-            else session['current_meet']
+            else user_session['current_meet']
         )
 
     meeting_form = MeetingForm()
-    meeting_data = join_meets(meet_id=session['current_meet'])
-    meet_time = meeting_data.meeting_date_time.strftime("%H:%M:%S")
-    meet_date = meeting_data.meeting_date_time.strftime("%Y-%m-%d")
+    with db_session() as session:
+        meeting_data = GameMeeting.join_meetings(user_session['current_meet'], session)
+        meet_time = meeting_data.meeting_date_time.strftime("%H:%M:%S+%f") #  не решено
+        print(meet_time)  # , tzinfo = pytz.UTC
+        meet_date = meeting_data.meeting_date_time.strftime("%Y-%m-%d")
 
     return render_template(
         'edit_meeting.html',
@@ -111,12 +114,13 @@ def user_control():
 def submit_edit_meet():
     meeting_form = MeetingForm()
     if meeting_form.validate_on_submit:
-        update_meeting(meeting_form, session['current_meet'])
+        with db_session() as session:
+            update_meeting(meeting_form, user_session['current_meet'], session)
 
-    return redirect(url_for('meeting.edit_meet'))
+    return redirect(url_for('user.profile'))
 
 
-@blueprint.route('/meetings', methods=['POST', 'GET'])
+@blueprint.route('/', methods=['POST', 'GET'])
 @login_required
 def meetings():
     title = 'LFG'
