@@ -3,7 +3,7 @@ from webapp.meeting.models import GameMeeting
 from flask_wtf import FlaskForm
 
 
-def update_profile(form, user_id, session) -> None:
+def update_profile(session, form, user_id) -> None:
     """
     Обновляет данные профиля в БД
     """
@@ -21,7 +21,7 @@ def update_profile(form, user_id, session) -> None:
     session.commit()
 
 
-def update_meeting(form: FlaskForm, meeting_id: int, session) -> None:
+def update_meeting(session, form: FlaskForm, meeting_id: int) -> None:
     """
     Обновляет данные встречи в БД
     """
@@ -34,7 +34,7 @@ def update_meeting(form: FlaskForm, meeting_id: int, session) -> None:
     session.commit()
 
 
-def add_meeting(new_meeting: GameMeeting, session) -> bool:
+def add_meeting(session, new_meeting: GameMeeting) -> bool:
     """
     Записывает данные новой встречи в БД.
     Возвращает результат записи.
