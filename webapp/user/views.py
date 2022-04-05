@@ -99,7 +99,7 @@ def profile():
             session.delete(player)
             session.commit()
             return redirect(url_for('user.profile'))
-        if not UserProfile.join_profile(current_user.id, session):
+        if not UserProfile.join_profile(session, current_user.id):
             new_profile = UserProfile(
                 owner_id=current_user.id,
                 name='',
@@ -112,9 +112,9 @@ def profile():
             )
             session.add(new_profile)
             session.commit()
-        profile_data = UserProfile.join_profile(current_user.id, session)
-        meets_data = GameMeeting.owner_meetings(current_user.id, session).order_by(GameMeeting.meeting_date_time.asc())
-        meets_user = GameMeeting.sub_to_meetings(current_user.id, session).order_by(GameMeeting.meeting_date_time.asc())
+        profile_data = UserProfile.join_profile(session, current_user.id)
+        meets_data = GameMeeting.owner_meetings(session, current_user.id).order_by(GameMeeting.meeting_date_time.asc())
+        meets_user = GameMeeting.sub_to_meetings(session, current_user.id).order_by(GameMeeting.meeting_date_time.asc())
         return render_template(
             'profile.html',
             page_title=title,
@@ -145,7 +145,7 @@ def change_avatar():
 def edit_profile():
     title = f'Профиль {current_user.username}'
     with db_session() as session:
-        profile_data = UserProfile.join_profile(current_user.id, session)
+        profile_data = UserProfile.join_profile(session, current_user.id)
     profile_form = ProfileForm()
     return render_template(
         'edit_profile.html',
@@ -160,7 +160,7 @@ def submit_profile():
     form = ProfileForm()
     with db_session() as session:
         if bool(UserProfile.query.filter_by(owner_id=current_user.id).first()):
-            update_profile(form, current_user, session)
+            update_profile(session, form, current_user)
             flash('Личные данные успешно сохранены!')
             return redirect(url_for('user.profile'))
         new_profile = UserProfile(

@@ -49,7 +49,7 @@ class UserProfile(db.Model, UserMixin):
         return f'Пользователь {self.name}'
 
     @classmethod
-    def join_profile(cls, user_id, session):
+    def join_profile(cls, session, user_id):
         """
         Возвращает из БД данные профиля юзера с заданным ID
         """
