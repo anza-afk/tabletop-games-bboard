@@ -34,14 +34,14 @@ class GameMeeting(db.Model, UserMixin):
         return session.query(cls).filter(cls.meeting_date_time > datetime.now())
 
     @classmethod
-    def join_meetings(cls, meeting_id, session):
+    def join_meetings(cls, session, meeting_id):
         """
         Возвращает данные встречи по её id
         """
         return cls.active_games(session).filter(GameMeeting.id == meeting_id).one()
 
     @classmethod
-    def owner_meetings(cls, user_id, session):
+    def owner_meetings(cls, session, user_id):
         """
         Возвращает список из активных встреч,созданные текущим пользователь
         """
@@ -49,7 +49,7 @@ class GameMeeting(db.Model, UserMixin):
         return cls.active_games(session).filter(cls.owner_id == user_id)
 
     @classmethod
-    def sub_to_meetings(cls, user_id, session):
+    def sub_to_meetings(cls, session, user_id):
         """
         Возвращает список из активных встреч, на которые подписан текущий пользователь
         """

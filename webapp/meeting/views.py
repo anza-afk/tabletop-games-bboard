@@ -8,9 +8,8 @@ from webapp.meeting.models import MeetingUser, GameMeeting
 from webapp.config import GAMES_PER_PAGE
 from webapp.database import db_session
 from math import ceil
-from datetime import date, timezone, tzinfo
+from datetime import date
 from sqlalchemy.orm import load_only
-import pytz
 
 blueprint = Blueprint('meeting', __name__, url_prefix='/meetings')
 
@@ -26,7 +25,7 @@ def create_meeting():
     title = 'Создание встречи'
     meeting_form = MeetingForm(request.form)
     with db_session() as session:
-        meet_data = GameMeeting.owner_meetings(current_user.id, session)
+        meet_data = GameMeeting.owner_meetings(session, current_user.id)
         if meet_data.count() >= 10:
             flash('Ошибка создания встречи, Вы создали слишком много встреч.')
             return render_template(
@@ -51,7 +50,7 @@ def create_meeting():
                 game_id=game_id
             )
 
-            if add_meeting(new_meeting, session):
+            if add_meeting(session, new_meeting):
                 flash('Вы успешно создали встречу!')
                 return redirect(url_for('meeting.meetings'))
 
@@ -79,8 +78,8 @@ def edit_meeting():
 
     meeting_form = MeetingForm()
     with db_session() as session:
-        meeting_data = GameMeeting.join_meetings(user_session['current_meet'], session)
-        meet_time = meeting_data.meeting_date_time.strftime("%H:%M:%S+%f") #  не решено
+        meeting_data = GameMeeting.join_meetings(session, user_session['current_meet'])
+        meet_time = meeting_data.meeting_date_time.strftime("%H:%M:%S+%f")  # не решено
         print(meet_time)  # , tzinfo = pytz.UTC
         meet_date = meeting_data.meeting_date_time.strftime("%Y-%m-%d")
 
@@ -115,7 +114,7 @@ def submit_edit_meet():
     meeting_form = MeetingForm()
     if meeting_form.validate_on_submit:
         with db_session() as session:
-            update_meeting(meeting_form, user_session['current_meet'], session)
+            update_meeting(session, meeting_form, user_session['current_meet'])
 
     return redirect(url_for('user.profile'))
 
@@ -128,7 +127,7 @@ def meetings():
     page = int(request.args.get('p', 1))
     with db_session() as session:
         if buttons.validate_on_submit():
-            meet_data = GameMeeting.sub_to_meetings(current_user.id, session)
+            meet_data = GameMeeting.sub_to_meetings(session, current_user.id)
             if meet_data.count() >= 10:
                 flash('Ошибка подписки. Вы подписаны на максимальное количество встреч')
                 return redirect(url_for('meeting.meetings'))
@@ -171,7 +170,7 @@ def meetings():
         query = active_games.order_by(GameMeeting.meeting_date_time.asc())
         meets_list = paginate(query, page, GAMES_PER_PAGE).all()
         last_page = ceil(active_games.count() / GAMES_PER_PAGE)
-        current_user_meetings = GameMeeting.sub_to_meetings(current_user.id, session)
+        current_user_meetings = GameMeeting.sub_to_meetings(session, current_user.id)
         return render_template(
             'meetings.html',
             meets_list=meets_list,
