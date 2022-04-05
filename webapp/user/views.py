@@ -1,5 +1,5 @@
 from werkzeug.security import generate_password_hash
-from flask import Blueprint, redirect, render_template, flash, url_for
+from flask import Blueprint, current_app, redirect, render_template, flash, url_for
 from flask_login import current_user, login_user, logout_user, login_required
 from webapp.user.forms import LoginForm, RegistrationForm, ProfileForm
 from webapp.meeting.forms import ButtonForm, AvatarForm
@@ -10,7 +10,7 @@ from webapp.database import db_session
 import os
 import sqlalchemy.exc
 
-blueprint = Blueprint('user', __name__, url_prefix='/user', static_folder='static')
+blueprint = Blueprint('user', __name__, url_prefix='/user')
 
 
 @blueprint.route('/login')
@@ -86,9 +86,8 @@ def profile():
 
     buttons = ButtonForm()
     avatar_form = AvatarForm()
-    print(blueprint.static_folder)
-    img_dict = os.listdir(os.path.join(blueprint.static_folder, "images/avatars"))
-    avatar_form.choose_avatar.choices = [(f'static/images/avatars/{img}', img, ) for img in img_dict]
+    img_dict = os.listdir(os.path.join(current_app.static_folder, "images/avatars"))
+    avatar_form.choose_avatar.choices = [(f'images/avatars/{img}', img, ) for img in img_dict]
     with db_session() as session:
         if buttons.validate_on_submit():
             player = session.query(MeetingUser).join(GameMeeting).filter(

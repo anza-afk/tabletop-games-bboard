@@ -79,7 +79,7 @@ def edit_meeting():
     meeting_form = MeetingForm()
     with db_session() as session:
         meeting_data = GameMeeting.join_meetings(session, user_session['current_meet'])
-        meet_time = meeting_data.meeting_date_time.strftime("%H:%M:%S+%f")  # не решено
+        meet_time = meeting_data.meeting_date_time.strftime("%H:%M:%S")  # не решено
         print(meet_time)  # , tzinfo = pytz.UTC
         meet_date = meeting_data.meeting_date_time.strftime("%Y-%m-%d")
 
