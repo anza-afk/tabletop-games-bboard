@@ -22,12 +22,19 @@ class MeetingForm(FlaskForm):
         ],
         render_kw={"class": "form-control", 'placeholder': 'От 1 до 50 игроков'}
     )
-    meeting_place = StringField(
-        'Укажите место встречи.',
+    meeting_city = StringField(
+        'Укажите город встречи.',
         validators=[
             DataRequired(),
         ],
-        render_kw={"class": "form-control", 'placeholder': 'г. Москва, Парк Останкино, 2-я лавочка от входа'}
+        render_kw={"class": "form-control", 'placeholder': 'г. Москва'}
+    )
+    meeting_place = StringField(
+        'Укажите адресс встречи.',
+        validators=[
+            DataRequired(),
+        ],
+        render_kw={"class": "form-control", 'placeholder': 'ул. Тимирязевская, Бургер кинг'}
     )
     date_meeting = DateField(
         'Выберите дату встречи.',

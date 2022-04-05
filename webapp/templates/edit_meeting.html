@@ -30,6 +30,28 @@
                 });
               })
             </script>
+
+            <div class="row mt-2">
+              <div class="col"><label class="labels">{{ form.meeting_city.label }}{{ form.meeting_city(value=meeting_data.city_name) }}</div>
+            </div>
+            <script>
+              $(function() {
+                $("#place_autocomplete_city").autocomplete_city({
+                  source:function(request, response) {
+                    $.getJSON("{{url_for('place.autocomplete_city')}}",{
+                      q: request.term,
+                    }, function(data) {
+                      response(data);
+                    }); 
+                  },
+                  minLength: 2,
+                  select: function(event, ui) {
+                    console.log(ui.item.value);
+                  }
+                });
+              })
+            </script>
+            
             <div class="row mt-2">
               <div class="col"><label class="labels">{{ form.number_of_players.label }}{{ form.number_of_players(value=meeting_data.number_of_players) }}</div>
             </div>

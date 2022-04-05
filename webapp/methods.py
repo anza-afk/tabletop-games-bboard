@@ -28,6 +28,7 @@ def update_meeting(session, form: FlaskForm, meeting_id: int) -> None:
     meet = session.query(GameMeeting).filter(GameMeeting.id == meeting_id).first()
     meet.game_name = form['game_name'].data
     meet.number_of_players = form['number_of_players'].data
+    meet.city_name = form['meeting_city'].data
     meet.meeting_place = form['meeting_place'].data
     meet.meeting_date_time = f"{form['date_meeting'].data} {form['time_meeting'].data}"
     meet.description = form['description'].data

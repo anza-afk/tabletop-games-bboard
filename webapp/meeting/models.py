@@ -19,9 +19,12 @@ class GameMeeting(db.Model, UserMixin):
     subscribed_players = Column(JSON)
     confirmed_players = Column(JSON)
     game_id = Column(Integer, ForeignKey('games.id'), index=True, nullable=True)
+    city_name = Column(String(), index=True)
+    city_id = Column(Integer, ForeignKey('cities.id'), index=True, nullable=True)
     user = relationship('User', backref='game_meetings', foreign_keys=[owner_id], lazy='joined')
     users = relationship('MeetingUser', lazy='joined')
     game = relationship("Game", lazy='subquery')
+    city = relationship("City", lazy='subquery')
 
     def repr(self):
         return f'{self.user}\'s {GameMeeting.game_name}'
