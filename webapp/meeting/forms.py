@@ -1,7 +1,7 @@
 from dataclasses import fields
 import datetime
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, IntegerField, DateField, TextAreaField, TimeField, SelectField
+from wtforms import StringField, SubmitField, IntegerField, DateField, TextAreaField, TimeField
 from wtforms.validators import DataRequired, ValidationError, NumberRange
 
 
@@ -77,15 +77,5 @@ class ButtonForm(FlaskForm):
     )
     submit_edit = SubmitField(
         'Редактировать встречу',
-        render_kw={"class": "btn btn-primary"}
-    )
-
-
-class AvatarForm(FlaskForm):
-    choose_avatar = SelectField(
-        'Выберите аватар'
-    )
-    submit = SubmitField(
-        'Сменить',
         render_kw={"class": "btn btn-primary"}
     )

@@ -11,4 +11,39 @@
   }
 
 
-.ui-autocomplete { height: 200px; overflow-y: scroll; overflow-x: hidden;}
+.ui-autocomplete {
+  height: 200px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.header {
+  background-color: rgb(69, 76, 109);
+}
+
+.footer {
+  background-color: rgb(69, 76, 109);
+}
+
+.btn-custom-header {
+  background-color: rgb(79, 87, 126);
+}
+
+.avatar_list {
+    height: 200px;
+    width: 100;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+/* label {
+  cursor: pointer;
+  filter: grayscale(100%);
+}
+
+label:hover {
+  filter: grayscale(0);
+} */
+input[type="radio"]:checked + label {
+  filter: grayscale(0);
+}

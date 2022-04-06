@@ -15,14 +15,14 @@
             type = "image/x-icon">
   </head>
 
-  <header class="header container-fluid bg-dark p-3">
+  <header class="header container-fluid p-3">
     <div class="page">
         <div class="row align-items-center">
           <div class="col-1 d-flex justify-content-start ">
-            {% if current_user.is_authenticated %}
+            {% if current_user.is_authenticated and current_user.user_profile.avatar %}
             <img class="rounded-circle" width="50px" src={{url_for('static', filename=current_user.user_profile.avatar) }}>
             {% endif %}
-            <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button type="button" class="btn btn-custom-header dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Меню
             </button>
             <div class="dropdown-menu">
@@ -96,13 +96,13 @@
       </section>
 
   </body>
-  <footer class="footer container-fluid bg-dark p-3">
+  <footer class="footer container-fluid p-3 fixed-bottom">
     <div class="row align-items-center">
       <div class="col-1 d-flex justify-content-start ">
-        {% if current_user.is_authenticated %}
+        {% if current_user.is_authenticated and current_user.user_profile.avatar %}
         <img class="rounded-circle" width="50px" src={{url_for('static', filename=current_user.user_profile.avatar) }}>
         {% endif %}
-        <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <button type="button" class="btn btn-custom-header dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Меню
         </button>
         <div class="dropdown-menu">

@@ -2,7 +2,7 @@ from dataclasses import fields
 from webapp.database import db_session
 from webapp.user.models import User
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, RadioField
 from wtforms.validators import DataRequired, EqualTo, Email, ValidationError, Length
 
 
@@ -141,5 +141,15 @@ class UserControlForm(FlaskForm):
     )
     submit_un_confirm = SubmitField(
         '-',
+        render_kw={"class": "btn btn-primary"}
+    )
+
+
+class AvatarForm(FlaskForm):
+    choose_avatar = RadioField(
+        'Выберите аватар'
+    )
+    submit_avatar = SubmitField(
+        'Сменить',
         render_kw={"class": "btn btn-primary"}
     )

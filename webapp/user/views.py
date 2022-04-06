@@ -1,8 +1,8 @@
 from werkzeug.security import generate_password_hash
 from flask import Blueprint, current_app, redirect, render_template, flash, url_for
 from flask_login import current_user, login_user, logout_user, login_required
-from webapp.user.forms import LoginForm, RegistrationForm, ProfileForm
-from webapp.meeting.forms import ButtonForm, AvatarForm
+from webapp.user.forms import LoginForm, RegistrationForm, ProfileForm, AvatarForm
+from webapp.meeting.forms import ButtonForm
 from webapp.methods import update_profile
 from webapp.user.models import User, UserProfile
 from webapp.meeting.models import MeetingUser, GameMeeting
@@ -87,7 +87,7 @@ def profile():
     buttons = ButtonForm()
     avatar_form = AvatarForm()
     img_dict = os.listdir(os.path.join(current_app.static_folder, "images/avatars"))
-    avatar_form.choose_avatar.choices = [(f'images/avatars/{img}', img, ) for img in img_dict]
+    avatar_form.choose_avatar.choices = [(f'images/avatars/{img}', img) for img in img_dict]
     with db_session() as session:
         if buttons.validate_on_submit():
             player = session.query(MeetingUser).join(GameMeeting).filter(
@@ -133,7 +133,6 @@ def change_avatar():
     with db_session() as session:
         profile = session.query(UserProfile).filter(UserProfile.owner_id == current_user.id).first()
         profile.avatar = avatar_form['choose_avatar'].data
-        print(profile.owner_id, '-->', profile.avatar)
         session.commit()
     flash('Личные данные успешно сохранены!')
     return redirect(url_for('user.profile'))
