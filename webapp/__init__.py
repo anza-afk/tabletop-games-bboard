@@ -6,7 +6,7 @@ from webapp.database import db, db_session
 from webapp.user.models import User
 from webapp.user.views import blueprint as user_blueprint
 from webapp.meeting.views import blueprint as meeting_blueprint
-from webapp.place.views import blueprint as place_blueprint
+from webapp.location.views import blueprint as location_blueprint
 
 migrate = Migrate()
 
@@ -24,7 +24,7 @@ def create_app():
 
     app.register_blueprint(user_blueprint)
     app.register_blueprint(meeting_blueprint)
-    app.register_blueprint(place_blueprint)
+    app.register_blueprint(location_blueprint)
 
     @login_manager.user_loader
     def load_user(user_id):

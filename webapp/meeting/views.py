@@ -6,7 +6,7 @@ from webapp.user.forms import UserControlForm
 from webapp.methods import update_meeting, add_meeting, paginate
 from webapp.game.models import Game
 from webapp.meeting.models import MeetingUser, GameMeeting
-from webapp.place.models import City
+from webapp.location.models import City
 from webapp.config import GAMES_PER_PAGE
 from webapp.database import db_session
 from math import ceil
@@ -39,14 +39,15 @@ def create_meeting():
         if meeting_form.validate_on_submit():
             db_game = session.query(Game).filter(Game.name == meeting_form['game_name'].data).first()
             game_id = db_game.id if db_game else None
-            print(meeting_form['meeting_city'].data, type(meeting_form['meeting_city'].data))
-            print(session.query(City).filter(City.name == 'Москва').first())
+            db_city = session.query(City).filter(City.name == meeting_form['meeting_city'].data).first()
+            city_id = db_city.id if db_city else None
             new_meeting = GameMeeting(
                 game_name=meeting_form['game_name'].data,
                 owner_id=current_user.id,
                 create_date=date.today(),
                 number_of_players=meeting_form['number_of_players'].data,
                 city_name=meeting_form['meeting_city'].data,
+                city_id=city_id,
                 meeting_place=meeting_form['meeting_place'].data,
                 meeting_date_time=f"{meeting_form['date_meeting'].data} {meeting_form['time_meeting'].data}",
                 description=meeting_form['description'].data,

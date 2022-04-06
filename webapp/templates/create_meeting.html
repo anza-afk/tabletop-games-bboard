@@ -32,9 +32,9 @@
               {{ form.meeting_city.label() }}:{{ form.meeting_city() }}
               <script>
                 $(function() {
-                  $("#game_autocomplete_city").autocomplete_city({
+                  $("#city_autocomplete").autocomplete({
                     source:function(request, response) {
-                      $.getJSON("{{url_for('place.autocomplete_city')}}",{
+                      $.getJSON("{{url_for('location.autocomplete_city')}}",{
                         q: request.term,
                       }, function(data) {
                         response(data);

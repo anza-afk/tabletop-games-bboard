@@ -27,10 +27,11 @@ class MeetingForm(FlaskForm):
         validators=[
             DataRequired(),
         ],
-        render_kw={"class": "form-control", 'placeholder': 'г. Москва'}
+        render_kw={"class": "form-control", 'placeholder': 'г. Москва'},
+        id='city_autocomplete'
     )
     meeting_place = StringField(
-        'Укажите адресс встречи.',
+        'Укажите адрес встречи.',
         validators=[
             DataRequired(),
         ],
