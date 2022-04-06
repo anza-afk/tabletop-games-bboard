@@ -28,7 +28,26 @@
                   });
                 })
               </script>
-          {% for field in form if field.name not in ['csrf_token', 'submit', 'game_name'] %}
+
+              {{ form.meeting_city.label() }}:{{ form.meeting_city() }}
+              <script>
+                $(function() {
+                  $("#city_autocomplete").autocomplete({
+                    source:function(request, response) {
+                      $.getJSON("{{url_for('location.autocomplete_city')}}",{
+                        q: request.term,
+                      }, function(data) {
+                        response(data);
+                      }); 
+                    },
+                    minLength: 2,
+                    select: function(event, ui) {
+                      console.log(ui.item.value);
+                    }
+                  });
+                })
+              </script>
+          {% for field in form if field.name not in ['csrf_token', 'submit', 'game_name', 'meeting_city'] %}
             <div class="form-group">
               {{ field.label() }}
               {{ field() }}
