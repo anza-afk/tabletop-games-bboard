@@ -22,7 +22,7 @@ class GameMeeting(db.Model, UserMixin):
     city_name = Column(String(), index=True)
     city_id = Column(Integer, ForeignKey('cities.id'), index=True, nullable=True)
     user = relationship('User', backref='game_meetings', foreign_keys=[owner_id], lazy='joined')
-    users = relationship('MeetingUser', lazy='joined')
+    users = relationship('MeetingUser', backref='game_meetings', lazy='joined')
     game = relationship("Game", lazy='subquery')
     city = relationship("City", lazy='subquery')
 
@@ -75,10 +75,12 @@ class MeetingUser(db.Model):
         """
         Подтверждает пользователя для текущего экземляра встречи
         """
+        self.game_meetings.number_of_players -= 1
         self.confirmed = True
 
     def un_confirm_user(self):
         """
         Отменяет подтверждение пользователя для текущего экземляра встречи
         """
+        self.game_meetings.number_of_players += 1
         self.confirmed = False
