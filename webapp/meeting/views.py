@@ -1,4 +1,3 @@
-import imp
 from flask import Blueprint, redirect, render_template, flash, url_for, request, jsonify, session as user_session
 from flask_login import current_user, login_required
 from webapp.meeting.forms import MeetingForm, ButtonForm
@@ -56,6 +55,7 @@ def create_meeting():
                 game_id=game_id
             )
 
+
             if add_meeting(session, new_meeting):
                 flash('Вы успешно создали встречу!')
                 return redirect(url_for('meeting.meetings'))
@@ -85,8 +85,7 @@ def edit_meeting():
     meeting_form = MeetingForm()
     with db_session() as session:
         meeting_data = GameMeeting.join_meetings(session, user_session['current_meet'])
-        meet_time = meeting_data.meeting_date_time.strftime("%H:%M:%S")  # не решено
-        print(meet_time)  # , tzinfo = pytz.UTC
+        meet_time = meeting_data.meeting_date_time.strftime("%H:%M")
         meet_date = meeting_data.meeting_date_time.strftime("%Y-%m-%d")
 
     return render_template(
@@ -170,11 +169,8 @@ def meetings():
         if buttons.submit_edit.data:
             return redirect(url_for('user.profile'))
 
-            # return redirect(url_for('meeting.meetings'))
-
-        active_games = GameMeeting.active_games(session)
-        query = active_games.order_by(GameMeeting.meeting_date_time.asc())
-        meets_list = paginate(query, page, GAMES_PER_PAGE).all()
+        active_games = GameMeeting.active_games(session).order_by(GameMeeting.meeting_date_time.asc())
+        meets_list = paginate(active_games, page, GAMES_PER_PAGE).all()
         last_page = ceil(active_games.count() / GAMES_PER_PAGE)
         current_user_meetings = GameMeeting.sub_to_meetings(session, current_user.id)
         return render_template(
@@ -205,4 +201,3 @@ def autocomplete():
         games_db = session.query(Game).options(load_only('name')).filter(Game.name.ilike(f'%{search}%')).limit(15)
         games_names = [game.name for game in games_db]
         return jsonify(games_names)
-
