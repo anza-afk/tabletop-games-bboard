@@ -55,7 +55,6 @@ def create_meeting():
                 game_id=game_id
             )
 
-
             if add_meeting(session, new_meeting):
                 flash('Вы успешно создали встречу!')
                 return redirect(url_for('meeting.meetings'))
