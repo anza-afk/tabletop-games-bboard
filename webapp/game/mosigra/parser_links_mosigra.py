@@ -8,7 +8,7 @@ from psycopg2._psycopg import IntegrityError
 
 
 def get_html(url:str) -> str:
-    try: 
+    try:
         result = requests.get(url)
         result.raise_for_status()
         return result.text
@@ -17,7 +17,8 @@ def get_html(url:str) -> str:
 
 
 def get_games_data(game_page:str) -> dict:
-    game_data = {'name' : None,
+    game_data = {
+        'name' : None,
         'numbers_of_players' : None,
         'age' : None,
         'brand' : None,
@@ -26,26 +27,32 @@ def get_games_data(game_page:str) -> dict:
         'image' : None
     }
     soup = bs(game_page, 'html.parser')
-    game_data['name'] = soup.find('article', class_="product__article tabs-container").find('h1').text   
-    something = (soup.find(id="attributes", class_ = 'tab-pane fade show').text).strip()
+    game_data['name'] = soup.find('article', class_="product__article tabs-container").find('h1').text
+    something = (soup.find(id="attributes", class_='tab-pane fade show').text).strip()
     while '\n\n' in something:
         something = something.replace('\n\n', '\n')
     something = list(something.split('\n'))
     if 'Возраст игроков' in something:
         ind = something.index('Возраст игроков')
-        game_data['age'] = something[ind+1]
+        game_data['age'] = something[ind + 1]
     if 'Количество игроков' in something:
         ind = something.index('Количество игроков')
-        game_data['numbers_of_players'] = something[ind+1]
+        game_data['numbers_of_players'] = something[ind + 1]
     if 'Производитель' in something:
         ind = something.index('Производитель')
-        game_data['brand'] = something[ind+1]
+        game_data['brand'] = something[ind + 1]
     try:
-        game_data['description'] = re.sub("[\r\t]", '', soup.find('div', class_="tab-content product-full-description").find('p').text.replace('\xa0', ' ')).strip('\n')
+        game_data['description'] = re.sub("[\r\t]", '', soup.find(
+            'div', class_="tab-content product-full-description"
+        ).find('p').text.replace('\xa0', ' ')).strip('\n')
+
         if game_data['description'].strip('\n') == '':
-            game_data['description'] = re.sub("[\r\t\n]", '', soup.find('div', class_="tab-content product-full-description").find_all('p')[1].text.replace('\xa0', ' ')).strip('\n')
+            game_data['description'] = re.sub("[\r\t\n]", '', soup.find(
+                'div', class_="tab-content product-full-description"
+            ).find_all('p')[1].text.replace('\xa0', ' ')).strip('\n')
+
     except(AttributeError, IndexError):
-        description = None
+        game_data['description'] = None
     tags_list = soup('a', class_="categories__link d-block mb-2")
     tags = [tag.text for tag in tags_list]
     game_data['tags'] = json.dumps(tags)
@@ -65,8 +72,3 @@ if __name__ == '__main__':
                     db_session.commit()
                 except IntegrityError:
                     db_session.rollback()
-
-
-   # url = 'https://www.mosigra.ru/vzryvnye_kotyata/'
-   # a = get_games_data(get_html(url))
-   # print(a)

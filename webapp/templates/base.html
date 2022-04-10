@@ -22,17 +22,16 @@
             {% if current_user.is_authenticated and current_user.user_profile.avatar %}
             <img class="rounded-circle" width="50px" src={{url_for('static', filename=current_user.user_profile.avatar) }}>
             {% endif %}
-            <button type="button" class="btn btn-custom-header dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <!-- <button type="button" class="btn btn-custom-header dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Меню
             </button>
             <div class="dropdown-menu">
               <a class="dropdown-item" href="/">Главная</a>
               <a class="dropdown-item" href="{{ url_for('meeting.create_meeting') }}">Create Group</a>
               <a class="dropdown-item" href="/meetings">LFG</a>
-              <!-- <a class="dropdown-item" href="#">Новости</a> -->
               <div class="dropdown-divider"></div>
               <a class="dropdown-item" href="/profile">Личный кабинет</a>
-            </div>
+            </div> -->
           </div>
           <div class="col-6">            
             <ul class="nav d-flex justify-content-left align-items-center border-0">
@@ -102,17 +101,16 @@
         {% if current_user.is_authenticated and current_user.user_profile.avatar %}
         <img class="rounded-circle" width="50px" src={{url_for('static', filename=current_user.user_profile.avatar) }}>
         {% endif %}
-        <button type="button" class="btn btn-custom-header dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <!-- <button type="button" class="btn btn-custom-header dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Меню
         </button>
         <div class="dropdown-menu">
           <a class="dropdown-item" href="/">Главная</a>
           <a class="dropdown-item" href="{{ url_for('meeting.create_meeting') }}">Create Group</a>
           <a class="dropdown-item" href="/meetings">LFG</a>
-          <!-- <a class="dropdown-item" href="#">Новости</a> -->
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="/profile">Личный кабинет</a>
-        </div>
+        </div> -->
       </div>
       <div class="col-6">            
         <ul class="nav d-flex justify-content-left align-items-center border-0">
