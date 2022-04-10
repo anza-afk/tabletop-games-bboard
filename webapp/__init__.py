@@ -1,7 +1,7 @@
 from flask import Flask, render_template
 from flask_login import LoginManager
 from flask_migrate import Migrate
-from webapp.news.test_parser import result_news
+from webapp.news.parser import result_news
 from webapp.database import db, db_session
 from webapp.user.models import User
 from webapp.user.views import blueprint as user_blueprint
