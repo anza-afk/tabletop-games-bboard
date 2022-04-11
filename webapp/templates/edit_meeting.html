@@ -76,13 +76,21 @@
         <h4 class="text-left mb-3">Список подписанных</h4>
         {% for user in meeting_data.users %}
           {% if not user.confirmed %}
-                <a href="#" data-toggle="modal" data-target="#ProfileModal{{user.user.username}}" class="link-primary"><h6 class="card-subtitle mb-2 text-primary">
-                  {{ user.user.username }}</h6></a>
-                  <form action="{{url_for('meeting.user_control')}}" class="py-3">
-                    {{ form.hidden_tag() }}
-                    {{ confirm_form.current_meet(value=user.id, hidden=True) }}
-                    {{ confirm_form.submit_confirm() }}
-                  </form>
+                  <div class="row align-items-center">
+                    <div class="col-6 mt-3 d-flex justify-content-start">
+                    <a href="#" data-toggle="modal" data-target="#ProfileModal{{user.user.username}}" class="link-primary"><h6 class="card-subtitle mb-2 text-primary">
+                    {{ user.user.username }}</h6></a>
+                    </div>
+                    <div class="col-6 mt-3 d-flex justify-content-end">
+                      <form action="{{url_for('meeting.user_control')}}" method="post" class="py-3">
+                        {{ form.hidden_tag() }}
+                        {{ confirm_form.current_meet(value=user.id, hidden=True) }}
+                        <div class="form-group">
+                          <button type="submit" class="btn btn-warning">Подтвердить</button>
+                        </div>                       
+                      </form>
+                    </div>
+                  </div>  
                 <!-- Modal -->
                 <div class="modal fade" id="ProfileModal{{user.user.username}}" tabindex="-1" role="dialog" aria-labelledby="ProfileModalLabel" aria-hidden="true">
                   <div class="modal-dialog" role="document">
@@ -125,13 +133,21 @@
         <h4 class="text-left mb-3">Список подтвержденных</h4>
         {% for user in meeting_data.users %}
           {% if user.confirmed %}
-                <a href="#" data-toggle="modal" data-target="#ProfileModal{{user.user.username}}" class="link-primary"><h6 class="card-subtitle mb-2 text-primary">
+                <div class="row align-items-center">
+                  <div class="col-6 mt-3 d-flex justify-content-start">
+                  <a href="#" data-toggle="modal" data-target="#ProfileModal{{user.user.username}}" class="link-primary"><h6 class="card-subtitle mb-2 text-primary">
                   {{ user.user.username }}</h6></a>
-                  <form action="{{url_for('meeting.user_control')}}" class="py-3">
-                    {{ form.hidden_tag() }}
-                    {{ confirm_form.current_meet(value=user.id, hidden=True) }}
-                    {{ confirm_form.submit_un_confirm() }}
-                  </form>
+                  </div>
+                  <div class="col-6 mt-3 d-flex justify-content-end">
+                    <form action="{{url_for('meeting.user_control')}}" method="post" class="py-3">
+                      {{ form.hidden_tag() }}
+                      {{ confirm_form.current_meet(value=user.id, hidden=True) }}
+                      <div class="form-group">
+                        <button type="submit" class="btn btn-warning">Отменить</button>
+                      </div>                       
+                    </form>
+                  </div>
+                </div> 
                 <!-- Modal -->
                 <div class="modal fade" id="ProfileModal{{user.user.username}}" tabindex="-1" role="dialog" aria-labelledby="ProfileModalLabel" aria-hidden="true">
                   <div class="modal-dialog" role="document">
