@@ -55,7 +55,6 @@ def create_meeting():
                 game_id=game_id
             )
 
-
             if add_meeting(session, new_meeting):
                 flash('Вы успешно создали встречу!')
                 return redirect(url_for('meeting.meetings'))
@@ -102,13 +101,11 @@ def edit_meeting():
 @blueprint.route('/user_control', methods=['GET', 'POST'])
 @login_required
 def user_control():
-    form_control = UserControlForm()
-    meeting_id = int(request.args['current_meet'])
-    if form_control.validate_on_submit and form_control.submit_confirm:
-        with db_session() as session:
-            meeting = MeetingUser.get_meet(session, meeting_id)
-            meeting.un_confirm_user() if meeting.confirmed else meeting.confirm_user()
-            session.commit()
+    meeting_id = int(request.form['current_meet'])
+    with db_session() as session:
+        meeting = MeetingUser.get_meet(session, meeting_id)
+        meeting.un_confirm_user() if meeting.confirmed else meeting.confirm_user()
+        session.commit()
 
     return redirect(url_for('meeting.edit_meeting'))
 
