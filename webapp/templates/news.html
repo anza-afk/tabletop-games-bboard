@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="content container">
+    <div class="row">
+        <div class="col-10">
+            <img src={{ news_data.image }}>
+            <h3>{{ news_data.title }}</h3>
+            <h6>by: {{ news_data.author }}</h6>
+            <h6>{{ news_data.published }}</h6>
+            <h5>{{ news_data.content }}</h5>
+        </div>
+    </div>
+
+</section>
+
+{% endblock content %}
