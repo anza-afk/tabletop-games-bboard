@@ -44,8 +44,8 @@ def create_app():
     def index():
         title = 'Поиск напарников для настольных игр'
         with db_session() as session:
-            for news in result_news:  # механизм сохранения новостей в бд для Celery + redis
-                save_news(session, *news.values())
+            # for news in result_news:  # механизм сохранения новостей в бд для Celery + redis
+            #     save_news(session, *news.values())
             published_news = session.query(News).order_by(News.published.asc()).limit(10)
         return render_template('index.html', page_title=title, list_news=published_news)
 
