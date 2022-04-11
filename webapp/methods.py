@@ -1,6 +1,7 @@
 from webapp.user.models import User, UserProfile
 from webapp.meeting.models import GameMeeting
 from webapp.location.models import City
+from webapp.news.models import News
 from flask_wtf import FlaskForm
 
 
@@ -60,3 +61,18 @@ def paginate(query, page_number, page_limit):
     if page_number > 1:
         query = query.offset((page_number - 1) * page_limit)
     return query
+
+
+def save_news(session, title, author, published, content, image):
+    new_news = News(
+        title=title,
+        author=author,
+        published=published,
+        content=content,
+        image=image
+    )
+    if bool(session.query(News).filter(News.title == title).first()):
+        print(f'News {title} already exists!')
+        return True
+    session.add(new_news)
+    session.commit()
