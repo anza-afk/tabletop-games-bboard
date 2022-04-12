@@ -1,0 +1,3 @@
+[submodule "tabletop-games-news"]
+	path = tabletop-games-news
+	url = https://github.com/anza-afk/tabletop-games-news

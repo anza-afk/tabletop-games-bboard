@@ -1,0 +1,57 @@
+version: '2.2'
+
+services:
+  app:
+    restart: always
+    build:
+      context: .
+    env_file: .env
+    cpus: 2
+    mem_limit: 564m
+    ports:
+      - '5000:5000'
+    volumes:
+      - .:/app
+
+  news:
+    restart: always
+    build:
+      context: ./tabletop-games-news
+    env_file: .env
+    cpus: 2
+    mem_limit: 256m
+    ports:
+      - '5001:5001'
+    volumes:
+      - .:/news
+    depends_on: 
+      news_db:
+        condition: service_healthy
+
+  parser:
+    restart: 'no'
+    build:
+      context: .
+    env_file: .env
+    volumes:
+      - .:/news
+    depends_on: 
+      news_db:
+        condition: service_healthy
+    command: python parser.py
+  
+  news_db:
+    image: postgres:14-alpine
+    env_file: .env
+    volumes:
+      - newsdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - 5432:5432
+
+volumes:
+  newsdata:
