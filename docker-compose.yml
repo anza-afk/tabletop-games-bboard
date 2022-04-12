@@ -17,13 +17,13 @@ services:
     restart: always
     build:
       context: ./tabletop-games-news
-    env_file: .env
+    env_file: ./tabletop-games-news/.env
     cpus: 2
     mem_limit: 256m
     ports:
       - '5001:5001'
     volumes:
-      - .:/news
+      -  ./tabletop-games-news:/news
     depends_on: 
       news_db:
         condition: service_healthy
@@ -32,17 +32,17 @@ services:
     restart: 'no'
     build:
       context: .
-    env_file: .env
+    env_file: ./tabletop-games-news/.env
     volumes:
-      - .:/news
+      -  ./tabletop-games-news:/news
     depends_on: 
       news_db:
         condition: service_healthy
-    command: python parser.py
+    command: python ./tabletop-games-news/parser.py
   
   news_db:
     image: postgres:14-alpine
-    env_file: .env
+    env_file: ./tabletop-games-news/.env
     volumes:
       - newsdata:/var/lib/postgresql/data
     healthcheck:
