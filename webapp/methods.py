@@ -2,8 +2,8 @@ from webapp.user.models import User, UserProfile
 from webapp.meeting.models import GameMeeting
 from webapp.location.models import City
 from flask_wtf import FlaskForm
-import json
 import requests
+import json
 
 
 def update_profile(session, form, user_id) -> None:
