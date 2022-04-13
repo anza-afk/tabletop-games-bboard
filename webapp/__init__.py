@@ -1,15 +1,13 @@
 from flask import Flask, render_template
 from flask_login import LoginManager
 from flask_migrate import Migrate
-from webapp.news.models import News
-from webapp.news.parser import result_news
 from webapp.database import db, db_session
 from webapp.user.models import User
 from webapp.user.views import blueprint as user_blueprint
 from webapp.meeting.views import blueprint as meeting_blueprint
 from webapp.location.views import blueprint as location_blueprint
 from webapp.news.views import blueprint as news_blueprint
-from webapp.methods import save_news
+from webapp.methods import get_news
 
 migrate = Migrate()
 
@@ -43,10 +41,7 @@ def create_app():
     @app.route('/')
     def index():
         title = 'Поиск напарников для настольных игр'
-        with db_session() as session:
-            # for news in result_news:  # механизм сохранения новостей в бд для Celery + redis
-            #     save_news(session, *news.values())
-            published_news = session.query(News).order_by(News.published.asc()).limit(10)
+        published_news = get_news()
         return render_template('index.html', page_title=title, list_news=published_news)
 
     return app
