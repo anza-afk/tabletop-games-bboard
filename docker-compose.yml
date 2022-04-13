@@ -40,6 +40,18 @@ services:
         condition: service_healthy
     command: python ./tabletop-games-news/parser.py
   
+  tasks:
+    restart: 'no'
+    build:
+      context: .
+    env_file: ./tabletop-games-news/.env
+    volumes:
+      -  ./tabletop-games-news:/news
+    depends_on: 
+      news_db:
+        condition: service_healthy
+    command: celery -A ./tabletop-games-news/parser_run_task worker -B --loglevel=INFO
+
   news_db:
     image: postgres:14-alpine
     env_file: ./tabletop-games-news/.env
@@ -52,6 +64,21 @@ services:
       retries: 5
     ports:
       - 5432:5432
+  
+  redis:
+    image: redis:6.2
+    volumes:
+      - redisdata:/storage/redis/data
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+    ports:
+      - 6379:6380
+    command: redis-server --appendonly yes
 
 volumes:
   newsdata:
+  redisdata:

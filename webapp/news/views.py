@@ -8,6 +8,9 @@ blueprint = Blueprint('news', __name__, url_prefix='/news')
 @blueprint.route('/news/<int:id>', methods=['GET'])
 def news():
     news_id = request.args['id']
-    print(news_id)
     news_data = list(filter(lambda n: n['id'] == news_id, get_news()))[0]
-    return render_template('news.html', news_data=news_data)
+    if news_data['title']:
+        title = news_data['title']
+    else:
+        title = 'Новости'
+    return render_template('news.html', news_data=news_data, page_title=title)
