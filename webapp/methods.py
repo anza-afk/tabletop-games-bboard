@@ -54,6 +54,15 @@ def add_meeting(session, new_meeting: GameMeeting) -> bool:
     #    return False
 
 
+def delete_meeting(session, meeting_id: int) -> None:
+    meet = session.query(GameMeeting).filter(GameMeeting.id == meeting_id).first()
+    print(meet.deleted)
+    meet.deleted = True
+    print(meet.deleted)
+    print(meet.id,'<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
+    session.commit()
+
+
 def paginate(query, page_number, page_limit):
     """
     Почти универсальная пагинация
@@ -65,4 +74,7 @@ def paginate(query, page_number, page_limit):
 
 
 def get_news():
-    return json.loads(requests.get('http://news:5001/news/').text)['News']
+    try:
+        return json.loads(requests.get('http://news:5001/news/').text)['News']
+    except requests.exceptions.ConnectionError:
+        return []

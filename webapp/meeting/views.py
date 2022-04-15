@@ -1,8 +1,8 @@
 from flask import Blueprint, redirect, render_template, flash, url_for, request, jsonify, session as user_session
 from flask_login import current_user, login_required
-from webapp.meeting.forms import MeetingForm, ButtonForm
+from webapp.meeting.forms import MeetingForm, ButtonForm, DeleteMeetingForm
 from webapp.user.forms import UserControlForm
-from webapp.methods import update_meeting, add_meeting, paginate
+from webapp.methods import update_meeting, add_meeting, delete_meeting, paginate
 from webapp.game.models import Game
 from webapp.meeting.models import MeetingUser, GameMeeting
 from webapp.location.models import City
@@ -50,8 +50,7 @@ def create_meeting():
                 meeting_place=meeting_form['meeting_place'].data,
                 meeting_date_time=f"{meeting_form['date_meeting'].data} {meeting_form['time_meeting'].data}",
                 description=meeting_form['description'].data,
-                subscribed_players=[],
-                confirmed_players=[],
+                number_of_subs=0,
                 game_id=game_id
             )
 
@@ -74,6 +73,7 @@ def edit_meeting():
     title = f'Встреча {current_user.username}'
     buttons = ButtonForm()
     confirm_form = UserControlForm()
+    delete_form = DeleteMeetingForm()
 
     if buttons.validate_on_submit:
         user_session['current_meet'] = (
@@ -94,7 +94,8 @@ def edit_meeting():
         meeting_data=meeting_data,
         meet_time=meet_time,
         meet_date=meet_date,
-        confirm_form=confirm_form
+        confirm_form=confirm_form,
+        delete_form=delete_form
     )
 
 
@@ -119,6 +120,16 @@ def submit_edit_meet():
             update_meeting(session, meeting_form, user_session['current_meet'])
 
     return redirect(url_for('user.profile'))
+
+
+@blueprint.route('/submit_delete_meet', methods=['POST'])
+@login_required
+def submit_delete_meet():
+    delete_form = DeleteMeetingForm()
+    if delete_form.validate_on_submit:
+        with db_session() as session:
+            delete_meeting(session, delete_form.current_meet.data)
+            return redirect(url_for('user.profile'))
 
 
 @blueprint.route('/', methods=['POST', 'GET'])
@@ -166,7 +177,8 @@ def meetings():
         if buttons.submit_edit.data:
             return redirect(url_for('user.profile'))
 
-        active_games = GameMeeting.active_games(session).order_by(GameMeeting.meeting_date_time.asc())
+        active_games = GameMeeting.active_games(session).order_by(
+            GameMeeting.meeting_date_time.asc()).filter(GameMeeting.number_of_players > GameMeeting.number_of_subs)
         meets_list = paginate(active_games, page, GAMES_PER_PAGE).all()
         last_page = ceil(active_games.count() / GAMES_PER_PAGE)
         current_user_meetings = GameMeeting.sub_to_meetings(session, current_user.id)
