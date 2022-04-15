@@ -73,6 +73,14 @@ class MeetingForm(FlaskForm):
                 raise ValidationError("Время не может быть в прошлом!")
 
 
+class DeleteMeetingForm(FlaskForm):
+    current_meet = IntegerField()
+    delete = SubmitField(
+        'Удалить встречу',
+        render_kw={"class": "btn btn-primary"}
+    )
+
+
 class ButtonForm(FlaskForm):
     current_meet = IntegerField()
     submit_add_wish = SubmitField(
