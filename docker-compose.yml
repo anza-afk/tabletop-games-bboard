@@ -31,26 +31,26 @@ services:
   parser:
     restart: 'no'
     build:
-      context: .
+      context: ./tabletop-games-news
     env_file: ./tabletop-games-news/.env
     volumes:
       -  ./tabletop-games-news:/news
     depends_on: 
       news_db:
         condition: service_healthy
-    command: python ./tabletop-games-news/parser.py
+    command: python parser.py
   
   tasks:
     restart: 'no'
     build:
-      context: .
+      context: ./tabletop-games-news
     env_file: ./tabletop-games-news/.env
     volumes:
       -  ./tabletop-games-news:/news
     depends_on: 
       news_db:
         condition: service_healthy
-    command: celery -A ./tabletop-games-news/parser_run_task worker -B --loglevel=INFO
+    command: celery -A parser_run_task worker -B --loglevel=INFO
 
   news_db:
     image: postgres:14-alpine
