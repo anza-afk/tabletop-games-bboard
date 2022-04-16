@@ -51,7 +51,8 @@ def create_meeting():
                 meeting_date_time=f"{meeting_form['date_meeting'].data} {meeting_form['time_meeting'].data}",
                 description=meeting_form['description'].data,
                 number_of_subs=0,
-                game_id=game_id
+                game_id=game_id,
+                deleted=False
             )
 
             if add_meeting(session, new_meeting):
