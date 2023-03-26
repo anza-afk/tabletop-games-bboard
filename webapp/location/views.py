@@ -6,6 +6,7 @@ from webapp.location.models import City
 
 blueprint = Blueprint('location', __name__, url_prefix='/locations')
 
+
 @blueprint.route('/_autocomplete_city', methods=['GET'])
 def autocomplete_city():
     with db_session() as session:

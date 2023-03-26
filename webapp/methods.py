@@ -46,12 +46,9 @@ def add_meeting(session, new_meeting: GameMeeting) -> bool:
     Записывает данные новой встречи в БД.
     Возвращает результат записи.
     """
-    # try:
     session.add(new_meeting)
     session.commit()
     return True
-    # except sqlalchemy.exc: #  sqlalchemy.exc не обрабатываются, нужно понять как обрабатывать
-    #    return False
 
 
 def delete_meeting(session, meeting_id: int) -> None:
@@ -59,7 +56,7 @@ def delete_meeting(session, meeting_id: int) -> None:
     print(meet.deleted)
     meet.deleted = True
     print(meet.deleted)
-    print(meet.id,'<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
+    print(meet.id,'<<<')
     session.commit()
 
 
